@@ -1,103 +1,171 @@
-import { createClient } from '@/lib/supabase/server'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import ProductCard from '@/components/ProductCard'
+import ArticleCard from '@/components/ArticleCard'
+import Link from 'next/link'
 
-export default async function Home() {
-  let notes = null
-  let error = null
-  let configError = null
-
-  try {
-    const supabase = createClient()
-    const result = await supabase
-      .from('notes')
-      .select('*')
-    
-    notes = result.data
-    error = result.error
-  } catch (err: any) {
-    configError = err.message
+// Datos estáticos de productos destacados
+const featuredProducts = [
+  {
+    id: '1',
+    name: 'Joyería Artesanal',
+    price: 25,
+    image: '/product1.jpg',
+    description: 'Piezas únicas hechas a mano con materiales de calidad'
+  },
+  {
+    id: '2',
+    name: 'Bolsos Personalizados',
+    price: 35,
+    image: '/product2.jpg',
+    description: 'Bolsos de tela con diseños exclusivos y personalizables'
+  },
+  {
+    id: '3',
+    name: 'Decoración para el Hogar',
+    price: 20,
+    image: '/product3.jpg',
+    description: 'Elementos decorativos únicos para dar personalidad a tu hogar'
+  },
+  {
+    id: '4',
+    name: 'Accesorios de Papelería',
+    price: 15,
+    image: '/product4.jpg',
+    description: 'Organizadores y accesorios creativos para tu escritorio'
   }
+]
 
+// Datos estáticos de artículos recientes
+const recentArticles = [
+  {
+    id: '1',
+    title: 'Cómo empezar en el mundo de las manualidades',
+    excerpt: 'Descubre los primeros pasos para adentrarte en el fascinante mundo de las manualidades y crear tus propias obras de arte.',
+    date: '15 de marzo, 2024',
+    image: '/article1.jpg'
+  },
+  {
+    id: '2',
+    title: 'Técnicas básicas de costura para principiantes',
+    excerpt: 'Aprende las técnicas fundamentales de costura que todo principiante debe conocer para crear proyectos increíbles.',
+    date: '10 de marzo, 2024',
+    image: '/article2.jpg'
+  },
+  {
+    id: '3',
+    title: 'Ideas creativas para decorar tu espacio',
+    excerpt: 'Inspírate con estas ideas creativas para transformar cualquier espacio en un lugar único y acogedor.',
+    date: '5 de marzo, 2024',
+    image: '/article3.jpg'
+  },
+  {
+    id: '4',
+    title: 'Materiales esenciales para manualidades',
+    excerpt: 'Conoce los materiales básicos que no pueden faltar en tu taller de manualidades para crear proyectos profesionales.',
+    date: '1 de marzo, 2024',
+    image: '/article4.jpg'
+  }
+]
+
+export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold mb-8">Hola mundo</h1>
+    <div className="min-h-screen flex flex-col">
+      <Header />
       
-      <div className="w-full max-w-2xl">
-        <h2 className="text-2xl font-semibold mb-4">Contenido de la tabla "notes"</h2>
-        
-        {configError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <p className="font-bold">Error de configuración:</p>
-            <p className="mb-2">{configError}</p>
-            <div className="mt-3 text-sm">
-              <p className="font-semibold">Pasos para solucionarlo:</p>
-              <ol className="list-decimal list-inside mt-1 space-y-1">
-                <li>Crea un archivo <code className="bg-red-200 px-1 rounded">.env.local</code> en la raíz del proyecto</li>
-                <li>Añade las siguientes variables:</li>
-              </ol>
-              <pre className="mt-2 bg-red-200 p-2 rounded text-xs overflow-x-auto">
-{`NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`}
-              </pre>
-              <div className="mt-2 text-xs space-y-1">
-                <p><strong>Importante:</strong> La URL debe comenzar con <code className="bg-red-200 px-1 rounded">https://</code> o <code className="bg-red-200 px-1 rounded">http://</code></p>
-                <p>Puedes obtener estas credenciales en: <a href="https://app.supabase.com" target="_blank" rel="noopener noreferrer" className="underline">Supabase Dashboard</a> → Settings → API</p>
-                <p className="mt-2"><strong>Después de crear/editar .env.local, reinicia el servidor:</strong></p>
-                <code className="block bg-red-200 p-1 rounded mt-1">npm run dev</code>
+      <main className="flex-grow">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-r from-primary to-secondary text-white py-20">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-5xl font-bold mb-4">Bienvenido a Grimmiz</h1>
+            <p className="text-xl mb-8">Descubre manualidades únicas hechas con amor y dedicación</p>
+            <Link 
+              href="/mundo-grimmiz"
+              className="inline-block bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+            >
+              Explorar Productos
+            </Link>
+          </div>
+        </section>
+
+        {/* Featured Products Section */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-grimmiz-text mb-4">Productos Destacados</h2>
+              <p className="text-grimmiz-text-secondary text-lg">Descubre nuestras creaciones más populares</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link 
+                href="/mundo-grimmiz"
+                className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+              >
+                Ver Todos los Productos
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Recent Articles Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-grimmiz-text mb-4">Últimos Artículos del Diario Grimmiz</h2>
+              <p className="text-grimmiz-text-secondary text-lg">Inspírate con nuestros últimos contenidos</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {recentArticles.map((article) => (
+                <ArticleCard key={article.id} {...article} />
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link 
+                href="/diario-grimmiz"
+                className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+              >
+                Ver Todos los Artículos
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* About Grimmiz Section */}
+        <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-4xl font-bold text-grimmiz-text mb-6">¿Qué es Grimmiz?</h2>
+              <div className="prose prose-lg mx-auto text-grimmiz-text">
+                <p className="text-lg leading-relaxed mb-4">
+                  Grimmiz es más que una tienda de manualidades. Es un espacio donde la creatividad cobra vida, 
+                  donde cada pieza está hecha con dedicación y pasión. Creemos en el valor de lo hecho a mano, 
+                  en la singularidad de cada creación y en el poder de las manualidades para transformar espacios 
+                  y vidas.
+                </p>
+                <p className="text-lg leading-relaxed mb-4">
+                  Nuestro mundo se divide en dos espacios principales: <strong>Mundo Grimmiz</strong>, donde 
+                  encontrarás productos únicos y personalizados, y <strong>Diario Grimmiz</strong>, un blog 
+                  lleno de inspiración, tutoriales y consejos para que tú también puedas crear.
+                </p>
+                <p className="text-lg leading-relaxed">
+                  Cada producto que encuentres aquí ha sido cuidadosamente seleccionado y creado pensando en 
+                  ofrecerte algo especial, único y lleno de significado. Bienvenido a nuestro mundo creativo.
+                </p>
               </div>
             </div>
           </div>
-        )}
-        
-        {!configError && error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <p className="font-bold">Error al conectar con Supabase:</p>
-            <p>{error.message}</p>
-          </div>
-        )}
-        
-        {!configError && !error && notes && notes.length === 0 && (
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-            <p>La tabla "notes" está vacía.</p>
-          </div>
-        )}
-        
-        {!configError && !error && notes && notes.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  {Object.keys(notes[0]).map((key) => (
-                    <th
-                      key={key}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-                    >
-                      {key}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {notes.map((note: any, index: number) => (
-                  <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    {Object.keys(note).map((key) => (
-                      <td
-                        key={key}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
-                      >
-                        {typeof note[key] === 'object'
-                          ? JSON.stringify(note[key])
-                          : String(note[key])}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </main>
-  );
+        </section>
+      </main>
+
+      <Footer />
+    </div>
+  )
 }
-
-
