@@ -1,0 +1,1 @@
+INSERT INTO "public"."category" ("id", "created_at", "updated_at", "name", "image_url", "slug") VALUES ('1', '2025-11-16 17:21:13.128189+00', '2025-11-16 17:21:13.128189', 'Láminas', null, 'laminas'), ('2', '2025-11-16 17:21:43.220908+00', '2025-11-16 17:21:43.220908', 'Figuras de resina', null, 'figuras-de-resina');
