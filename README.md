@@ -8,6 +8,7 @@ Tienda online para productos de manualidades hechos a mano.
 - TypeScript
 - Tailwind CSS
 - Supabase (base de datos)
+- Resend (envío de emails)
 
 ## Configuración
 
@@ -29,6 +30,29 @@ Tienda online para productos de manualidades hechos a mano.
    NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
    NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anon
    ```
+
+### Configurar Resend (para envío de emails)
+
+1. Crea una cuenta en [Resend](https://resend.com)
+
+2. Obtén tu API key:
+   - Ve a [API Keys](https://resend.com/api-keys)
+   - Crea una nueva API key
+
+3. (Opcional) Verifica tu dominio:
+   - Ve a [Domains](https://resend.com/domains)
+   - Añade tu dominio y sigue las instrucciones de verificación DNS
+   - Si no tienes un dominio, puedes usar `onboarding@resend.dev` para pruebas
+
+4. Actualiza `.env.local` con tu configuración:
+   ```
+   RESEND_API_KEY=re_tu_api_key
+   RESEND_FROM_EMAIL=noreply@tudominio.com
+   CONTACT_EMAIL=tu-email@ejemplo.com
+   ```
+   - `RESEND_API_KEY`: Tu API key de Resend
+   - `RESEND_FROM_EMAIL`: El email desde el que se enviarán los mensajes
+   - `CONTACT_EMAIL`: Tu email donde recibirás los mensajes de contacto
 
 ## Desarrollo
 
@@ -76,6 +100,11 @@ Este proyecto está configurado para desplegarse en Vercel.
 
 1. Ve a tu proyecto en Vercel
 2. Settings > Environment Variables
-3. Añade `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+3. Añade las siguientes variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `RESEND_API_KEY`
+   - `RESEND_FROM_EMAIL`
+   - `CONTACT_EMAIL`
 
 

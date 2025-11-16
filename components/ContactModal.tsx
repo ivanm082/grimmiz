@@ -22,6 +22,10 @@ export default function ContactModal({ isOpen, onClose, productTitle }: ContactM
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null
+    message: string
+  }>({ type: null, message: '' })
 
   if (!isOpen) return null
 
@@ -64,29 +68,50 @@ export default function ContactModal({ isOpen, onClose, productTitle }: ContactM
       return
     }
 
-    // Aquí iría la lógica para enviar el formulario
+    // Enviar el formulario a la API
     setIsSubmitting(true)
+    setSubmitStatus({ type: null, message: '' })
     
     try {
-      // TODO: Implementar envío del formulario
-      console.log('Formulario enviado:', {
-        ...formData,
-        product: productTitle
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          product: productTitle
+        }),
       })
-      
-      // Simular envío
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Cerrar modal y resetear formulario
-      alert('¡Mensaje enviado correctamente! Te contactaré pronto.')
-      setFormData({
-        name: '',
-        email: '',
-        comments: 'Me interesa este producto.'
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al enviar el mensaje')
+      }
+
+      // Mostrar mensaje de éxito
+      setSubmitStatus({
+        type: 'success',
+        message: '¡Mensaje enviado correctamente! Me pondré en contacto contigo lo antes posible a través del email que proporcionaste. ¡Gracias!'
       })
-      onClose()
-    } catch (error) {
-      alert('Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.')
+
+      // Resetear formulario después de 3 segundos
+      setTimeout(() => {
+        setFormData({
+          name: '',
+          email: '',
+          comments: 'Me interesa este producto.'
+        })
+        setSubmitStatus({ type: null, message: '' })
+        onClose()
+      }, 4000)
+    } catch (error: any) {
+      console.error('Error al enviar el formulario:', error)
+      setSubmitStatus({
+        type: 'error',
+        message: error.message || 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.'
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -96,6 +121,17 @@ export default function ContactModal({ isOpen, onClose, productTitle }: ContactM
     setFormData(prev => ({ ...prev, [field]: value }))
     // Limpiar error del campo al escribir
     setErrors(prev => ({ ...prev, [field]: '' }))
+    // Limpiar mensaje de estado si hay alguno
+    if (submitStatus.type) {
+      setSubmitStatus({ type: null, message: '' })
+    }
+  }
+
+  const handleClose = () => {
+    // Limpiar estado al cerrar
+    setSubmitStatus({ type: null, message: '' })
+    setErrors({ name: '', email: '', comments: '' })
+    onClose()
   }
 
   return (
@@ -103,7 +139,7 @@ export default function ContactModal({ isOpen, onClose, productTitle }: ContactM
       {/* Overlay */}
       <div 
         className="fixed inset-0 bg-black/50 z-50 transition-opacity"
-        onClick={onClose}
+        onClick={handleClose}
       />
       
       {/* Modal */}
@@ -118,7 +154,7 @@ export default function ContactModal({ isOpen, onClose, productTitle }: ContactM
               Contactar sobre: {productTitle}
             </h2>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="text-grimmiz-text-secondary hover:text-grimmiz-text transition-colors"
               aria-label="Cerrar"
             >
@@ -135,6 +171,36 @@ export default function ContactModal({ isOpen, onClose, productTitle }: ContactM
               y cualquier detalle que consideres relevante, y me pondré en contacto contigo 
               cuanto antes. ✨
             </p>
+
+            {/* Mensaje de éxito/error */}
+            {submitStatus.type && (
+              <div className={`p-4 rounded-lg mb-6 ${
+                submitStatus.type === 'success' 
+                  ? 'bg-green-50 border border-green-200' 
+                  : 'bg-red-50 border border-red-200'
+              }`}>
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    {submitStatus.type === 'success' ? (
+                      <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="ml-3">
+                    <p className={`text-sm font-medium ${
+                      submitStatus.type === 'success' ? 'text-green-800' : 'text-red-800'
+                    }`}>
+                      {submitStatus.message}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Nombre */}
@@ -206,7 +272,7 @@ export default function ContactModal({ isOpen, onClose, productTitle }: ContactM
               <div className="flex gap-3 pt-4">
                 <button
                   type="button"
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="flex-1 px-6 py-3 border-2 border-gray-300 text-grimmiz-text rounded-lg font-semibold hover:bg-gray-50 transition-colors"
                   disabled={isSubmitting}
                 >
