@@ -74,7 +74,8 @@ export default async function Home() {
           name: product.title || `Producto ${product.id}`,
           price: Number(product.price) || 0,
           image: product.main_image_url || '',
-          description: product.description || ''
+          description: product.description || '',
+          slug: product.slug || product.title?.toLowerCase().replace(/\s+/g, '-') || `producto-${product.id}`
         }))
     }
   } catch (err: any) {

@@ -7,11 +7,15 @@ interface ProductCardProps {
   price: number
   image: string
   description?: string
+  slug?: string
 }
 
-export default function ProductCard({ name, price, image, description }: ProductCardProps) {
+export default function ProductCard({ id, name, price, image, description, slug }: ProductCardProps) {
+  const productSlug = slug || name.toLowerCase().replace(/\s+/g, '-')
+  const urlSlug = `${productSlug}-${id}`
+  
   return (
-    <Link href={`/mundo-grimmiz/${name.toLowerCase().replace(/\s+/g, '-')}`}>
+    <Link href={`/mundo-grimmiz/${urlSlug}`}>
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
         <div className="relative h-64 bg-gray-200">
           {image ? (
