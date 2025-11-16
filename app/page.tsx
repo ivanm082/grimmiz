@@ -3,38 +3,7 @@ import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import ArticleCard from '@/components/ArticleCard'
 import Link from 'next/link'
-
-// Datos estáticos de productos destacados
-const featuredProducts = [
-  {
-    id: '1',
-    name: 'Joyería Artesanal',
-    price: 25,
-    image: '/product1.jpg',
-    description: 'Piezas únicas hechas a mano con materiales de calidad'
-  },
-  {
-    id: '2',
-    name: 'Bolsos Personalizados',
-    price: 35,
-    image: '/product2.jpg',
-    description: 'Bolsos de tela con diseños exclusivos y personalizables'
-  },
-  {
-    id: '3',
-    name: 'Decoración para el Hogar',
-    price: 20,
-    image: '/product3.jpg',
-    description: 'Elementos decorativos únicos para dar personalidad a tu hogar'
-  },
-  {
-    id: '4',
-    name: 'Accesorios de Papelería',
-    price: 15,
-    image: '/product4.jpg',
-    description: 'Organizadores y accesorios creativos para tu escritorio'
-  }
-]
+import { createClient } from '@/lib/supabase/server'
 
 // Datos estáticos de artículos recientes
 const recentArticles = [
@@ -68,7 +37,50 @@ const recentArticles = [
   }
 ]
 
-export default function Home() {
+export default async function Home() {
+  // Obtener productos destacados de Supabase
+  let featuredProducts: any[] = []
+  let productsError = null
+
+  try {
+    const supabase = createClient()
+    
+    // Intentar con order, si falla intentar sin order
+    let query = supabase
+      .from('product')
+      .select('*')
+      .limit(4)
+    
+    let { data, error } = await query.order('created_at', { ascending: false })
+    
+    // Si falla por el campo created_at, intentar sin order
+    if (error && error.message?.includes('created_at')) {
+      const result = await supabase
+        .from('product')
+        .select('*')
+        .limit(4)
+      data = result.data
+      error = result.error
+    }
+    
+    if (error) {
+      productsError = error
+    } else if (data) {
+      // Mapear los datos de Supabase al formato esperado por ProductCard
+      featuredProducts = data
+        .filter((product: any) => product !== null && product !== undefined)
+        .map((product: any) => ({
+          id: product.id?.toString() || '',
+          name: product.title || `Producto ${product.id}`,
+          price: Number(product.price) || 0,
+          image: product.main_image_url || '',
+          description: product.description || ''
+        }))
+    }
+  } catch (err: any) {
+    productsError = { message: err.message || 'Error desconocido al cargar productos' }
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -212,11 +224,27 @@ export default function Home() {
               <p className="text-grimmiz-text-secondary text-lg">Descubre nuestras creaciones más populares</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} {...product} />
-              ))}
-            </div>
+            {productsError && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-8 text-center">
+                <p className="font-bold">Error al cargar productos:</p>
+                <p>{productsError.message || 'No se pudieron cargar los productos'}</p>
+              </div>
+            )}
+            
+            {!productsError && featuredProducts.length === 0 && (
+              <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-8 text-center">
+                <p>No hay productos disponibles en este momento.</p>
+                <p className="text-sm mt-2">Si acabas de crear productos, verifica que las políticas RLS en Supabase permitan la lectura pública.</p>
+              </div>
+            )}
+            
+            {!productsError && featuredProducts.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                {featuredProducts.map((product) => (
+                  <ProductCard key={product.id} {...product} />
+                ))}
+              </div>
+            )}
 
             <div className="text-center">
               <Link 
