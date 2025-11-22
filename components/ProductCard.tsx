@@ -15,9 +15,9 @@ export default function ProductCard({ id, name, price, image, description, slug 
   const urlSlug = `${productSlug}-${id}`
   
   return (
-    <Link href={`/mundo-grimmiz/${urlSlug}`}>
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
-        <div className="relative h-64 bg-gray-200">
+    <Link href={`/mundo-grimmiz/${urlSlug}`} className="h-full">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col">
+        <div className="relative h-64 bg-gray-200 flex-shrink-0">
           {image ? (
             <Image
               src={image}
@@ -32,14 +32,14 @@ export default function ProductCard({ id, name, price, image, description, slug 
             </div>
           )}
         </div>
-        <div className="p-4">
-          <h3 className="text-lg font-semibold text-grimmiz-text mb-2 group-hover:text-primary transition-colors">
+        <div className="p-4 flex flex-col flex-grow">
+          <h3 className="text-lg font-semibold text-grimmiz-text mb-2 group-hover:text-primary transition-colors line-clamp-2">
             {name}
           </h3>
           {description && (
             <p className="text-sm text-grimmiz-text-secondary mb-3 line-clamp-2">{description}</p>
           )}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-auto">
             <span className="text-xl font-bold text-primary">{price}€</span>
             <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors text-sm font-semibold">
               Ver más
