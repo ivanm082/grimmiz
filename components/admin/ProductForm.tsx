@@ -30,6 +30,7 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
     const [isLoadingCategories, setIsLoadingCategories] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState('')
+    const [newlyUploadedImage, setNewlyUploadedImage] = useState<string | null>(null)
 
     const [formData, setFormData] = useState({
         title: product?.title || '',
@@ -91,6 +92,11 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
         }
 
         setSubmitError('')
+
+        // Si cambiamos la imagen, guardamos la URL para poder borrarla si cancelamos
+        if (field === 'main_image_url') {
+            setNewlyUploadedImage(value)
+        }
     }
 
     const validate = () => {
@@ -173,6 +179,24 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
         }
     }
 
+    const handleCancel = async () => {
+        // Si hay una imagen recién subida y es diferente a la original (o no había original), borrarla
+        if (newlyUploadedImage && newlyUploadedImage !== product?.main_image_url) {
+            try {
+                await fetch('/api/admin/upload', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: newlyUploadedImage }),
+                })
+            } catch (error) {
+                console.error('Error deleting unused image:', error)
+            }
+        }
+        router.back()
+    }
+
     if (isLoadingCategories) {
         return (
             <div className="bg-white rounded-lg shadow-sm p-8">
@@ -205,8 +229,8 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
                         onChange={(e) => handleChange('title', e.target.value)}
                         placeholder="Nombre del producto"
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.title
-                                ? 'border-red-500 focus:ring-red-500'
-                                : 'border-gray-300 focus:ring-primary focus:border-primary'
+                            ? 'border-red-500 focus:ring-red-500'
+                            : 'border-gray-300 focus:ring-primary focus:border-primary'
                             }`}
                     />
                     {errors.title && (
@@ -226,8 +250,8 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
                         onChange={(e) => handleChange('slug', e.target.value)}
                         placeholder="producto-ejemplo"
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.slug
-                                ? 'border-red-500 focus:ring-red-500'
-                                : 'border-gray-300 focus:ring-primary focus:border-primary'
+                            ? 'border-red-500 focus:ring-red-500'
+                            : 'border-gray-300 focus:ring-primary focus:border-primary'
                             }`}
                     />
                     {errors.slug && (
@@ -268,8 +292,8 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
                             step="0.01"
                             min="0"
                             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.price
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-primary focus:border-primary'
+                                ? 'border-red-500 focus:ring-red-500'
+                                : 'border-gray-300 focus:ring-primary focus:border-primary'
                                 }`}
                         />
                         {errors.price && (
@@ -287,8 +311,8 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
                             value={formData.category_id}
                             onChange={(e) => handleChange('category_id', e.target.value)}
                             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.category_id
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-primary focus:border-primary'
+                                ? 'border-red-500 focus:ring-red-500'
+                                : 'border-gray-300 focus:ring-primary focus:border-primary'
                                 }`}
                         >
                             <option value="">Selecciona una categoría</option>
@@ -315,7 +339,7 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
                 <div className="flex gap-4 pt-4 border-t border-gray-200">
                     <button
                         type="button"
-                        onClick={() => router.back()}
+                        onClick={handleCancel}
                         className="flex-1 px-6 py-3 border-2 border-gray-300 text-grimmiz-text rounded-lg font-semibold hover:bg-gray-50 transition-colors"
                         disabled={isSubmitting}
                     >

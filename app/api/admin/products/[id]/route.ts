@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { deleteImage, extractPathFromUrl } from '@/lib/supabase/storage'
 
 // GET - Obtener producto por ID
 export async function GET(
@@ -72,10 +73,10 @@ export async function PUT(
 
         const supabase = createAdminClient()
 
-        // Verificar que el producto existe
+        // Verificar que el producto existe y obtener imagen actual
         const { data: existingProduct, error: fetchError } = await supabase
             .from('product')
-            .select('id')
+            .select('id, main_image_url')
             .eq('id', id)
             .single()
 
@@ -98,6 +99,20 @@ export async function PUT(
                 { error: 'La categoría especificada no existe' },
                 { status: 400 }
             )
+        }
+
+        // Si la imagen principal ha cambiado, eliminar la anterior del storage
+        if (existingProduct.main_image_url && existingProduct.main_image_url !== main_image_url) {
+            const oldImagePath = extractPathFromUrl(existingProduct.main_image_url)
+            if (oldImagePath) {
+                console.log(`Deleting old image: ${oldImagePath}`)
+                // No esperamos a que termine para no bloquear la respuesta, pero logueamos errores
+                deleteImage(oldImagePath).then(result => {
+                    if (!result.success) {
+                        console.error('Failed to delete old image:', result.error)
+                    }
+                })
+            }
         }
 
         // Actualizar producto
@@ -156,10 +171,10 @@ export async function DELETE(
         const { id } = await params
         const supabase = createAdminClient()
 
-        // Verificar que el producto existe
+        // Verificar que el producto existe y obtener imagen para borrarla
         const { data: existingProduct, error: fetchError } = await supabase
             .from('product')
-            .select('id')
+            .select('id, main_image_url')
             .eq('id', id)
             .single()
 
@@ -170,7 +185,8 @@ export async function DELETE(
             )
         }
 
-        // Eliminar producto (cascade eliminará imágenes adicionales)
+        // Eliminar producto (cascade eliminará imágenes adicionales de la DB)
+        // Pero necesitamos borrar la imagen principal del Storage manualmente
         const { error } = await supabase
             .from('product')
             .delete()
@@ -182,6 +198,17 @@ export async function DELETE(
                 { error: 'Error al eliminar el producto' },
                 { status: 500 }
             )
+        }
+
+        // Si se eliminó correctamente, borrar la imagen del storage
+        if (existingProduct.main_image_url) {
+            const imagePath = extractPathFromUrl(existingProduct.main_image_url)
+            if (imagePath) {
+                console.log(`Deleting product image: ${imagePath}`)
+                deleteImage(imagePath).catch(err =>
+                    console.error('Failed to delete image after product deletion:', err)
+                )
+            }
         }
 
         return NextResponse.json(

@@ -86,8 +86,11 @@ export function getImageSrcSet(url: string | null): string {
 export function extractPathFromUrl(url: string): string | null {
     try {
         // URL format: https://[project].supabase.co/storage/v1/object/public/product-images/[path]
-        const match = url.match(/\/product-images\/(.+)$/)
-        return match ? match[1] : null
+        // Usamos URL API para manejar query params automáticamente
+        const urlObj = new URL(url)
+        // pathname será algo como /storage/v1/object/public/product-images/products/file.jpg
+        const match = urlObj.pathname.match(/\/product-images\/(.+)$/)
+        return match ? decodeURIComponent(match[1]) : null
     } catch (error) {
         return null
     }

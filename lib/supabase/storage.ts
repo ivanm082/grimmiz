@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 
 const BUCKET_NAME = 'product-images'
 const MAX_FILE_SIZE = 500 * 1024 // 500KB
@@ -40,7 +40,8 @@ export function generateUniqueFileName(originalName: string): string {
  */
 export async function uploadImage(file: File, folder: string = 'products'): Promise<{ url: string; path: string } | { error: string }> {
     try {
-        const supabase = createClient()
+        // Usar cliente admin para bypasear RLS
+        const supabase = createAdminClient()
 
         // Validar imagen
         const validation = validateImage(file)
@@ -85,7 +86,8 @@ export async function uploadImage(file: File, folder: string = 'products'): Prom
  */
 export async function deleteImage(filePath: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const supabase = createClient()
+        // Usar cliente admin para bypasear RLS
+        const supabase = createAdminClient()
 
         const { error } = await supabase.storage
             .from(BUCKET_NAME)

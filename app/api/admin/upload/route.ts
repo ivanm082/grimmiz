@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { uploadImage } from '@/lib/supabase/storage'
+import { uploadImage, deleteImage, extractPathFromUrl } from '@/lib/supabase/storage'
 
 export async function POST(request: Request) {
     try {
@@ -30,6 +30,46 @@ export async function POST(request: Request) {
 
     } catch (error) {
         console.error('Error in POST /api/admin/upload:', error)
+        return NextResponse.json(
+            { error: 'Error al procesar la solicitud' },
+            { status: 500 }
+        )
+    }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        const body = await request.json()
+        const { url } = body
+
+        if (!url) {
+            return NextResponse.json(
+                { error: 'URL de imagen requerida' },
+                { status: 400 }
+            )
+        }
+
+        const path = extractPathFromUrl(url)
+        if (!path) {
+            return NextResponse.json(
+                { error: 'URL de imagen inválida' },
+                { status: 400 }
+            )
+        }
+
+        const result = await deleteImage(path)
+
+        if (!result.success) {
+            return NextResponse.json(
+                { error: result.error },
+                { status: 500 }
+            )
+        }
+
+        return NextResponse.json({ message: 'Imagen eliminada correctamente' })
+
+    } catch (error) {
+        console.error('Error in DELETE /api/admin/upload:', error)
         return NextResponse.json(
             { error: 'Error al procesar la solicitud' },
             { status: 500 }
