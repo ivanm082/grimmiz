@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+import OptimizedImage from '@/components/OptimizedImage'
 import Link from 'next/link'
 
 interface Product {
@@ -103,11 +103,12 @@ export default function ProductsTable({ products, onDelete, isLoading = false }:
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
                                         {product.main_image_url ? (
-                                            <Image
+                                            <OptimizedImage
                                                 src={product.main_image_url}
                                                 alt={product.title}
                                                 fill
                                                 className="object-cover"
+                                                size="thumbnail"
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">
@@ -167,11 +168,12 @@ export default function ProductsTable({ products, onDelete, isLoading = false }:
                         <div className="flex gap-4">
                             <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                                 {product.main_image_url ? (
-                                    <Image
+                                    <OptimizedImage
                                         src={product.main_image_url}
                                         alt={product.title}
                                         fill
                                         className="object-cover"
+                                        size="thumbnail"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">

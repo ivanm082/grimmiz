@@ -58,12 +58,14 @@ export default function LoginPage() {
                 throw new Error(data.error || 'Error al iniciar sesión')
             }
 
-            // Redirigir al dashboard
-            router.push('/admin/dashboard')
+            // Esperar para que la cookie se establezca antes de redirigir
+            // Usamos window.location para forzar una recarga completa
+            setTimeout(() => {
+                window.location.href = '/admin/dashboard'
+            }, 500)
         } catch (error: any) {
             console.error('Error logging in:', error)
             setLoginError(error.message || 'Error al iniciar sesión')
-        } finally {
             setIsSubmitting(false)
         }
     }
@@ -116,8 +118,8 @@ export default function LoginPage() {
                                 onChange={(e) => handleChange('username', e.target.value)}
                                 placeholder="Ingresa tu usuario"
                                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.username
-                                        ? 'border-red-500 focus:ring-red-500'
-                                        : 'border-gray-300 focus:ring-primary focus:border-primary'
+                                    ? 'border-red-500 focus:ring-red-500'
+                                    : 'border-gray-300 focus:ring-primary focus:border-primary'
                                     }`}
                                 autoComplete="username"
                             />
@@ -138,8 +140,8 @@ export default function LoginPage() {
                                 onChange={(e) => handleChange('password', e.target.value)}
                                 placeholder="Ingresa tu contraseña"
                                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.password
-                                        ? 'border-red-500 focus:ring-red-500'
-                                        : 'border-gray-300 focus:ring-primary focus:border-primary'
+                                    ? 'border-red-500 focus:ring-red-500'
+                                    : 'border-gray-300 focus:ring-primary focus:border-primary'
                                     }`}
                                 autoComplete="current-password"
                             />

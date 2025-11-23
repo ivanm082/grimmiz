@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 
 const BUCKET_NAME = 'product-images'
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+const MAX_FILE_SIZE = 500 * 1024 // 500KB
+const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif']
 
 /**
  * Valida que el archivo sea una imagen válida
@@ -11,14 +11,14 @@ export function validateImage(file: File): { valid: boolean; error?: string } {
     if (!ALLOWED_TYPES.includes(file.type)) {
         return {
             valid: false,
-            error: 'Tipo de archivo no permitido. Solo se aceptan JPG, PNG y WebP.'
+            error: 'Tipo de archivo no permitido. Solo se aceptan JPG, PNG, WebP y AVIF.'
         }
     }
 
     if (file.size > MAX_FILE_SIZE) {
         return {
             valid: false,
-            error: 'El archivo es demasiado grande. Tamaño máximo: 5MB.'
+            error: 'El archivo es demasiado grande. Tamaño máximo: 500KB.'
         }
     }
 
@@ -115,15 +115,4 @@ export function getPublicUrl(filePath: string): string {
     return publicUrl
 }
 
-/**
- * Extrae el path de una URL pública de Supabase
- */
-export function extractPathFromUrl(url: string): string | null {
-    try {
-        // URL format: https://[project].supabase.co/storage/v1/object/public/product-images/[path]
-        const match = url.match(/\/product-images\/(.+)$/)
-        return match ? match[1] : null
-    } catch (error) {
-        return null
-    }
-}
+export * from './image-utils'

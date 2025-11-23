@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, ChangeEvent, DragEvent } from 'react'
-import Image from 'next/image'
+import OptimizedImage from '@/components/OptimizedImage'
 
 interface ImageUploadProps {
     value: string
@@ -18,16 +18,16 @@ export default function ImageUpload({ value, onChange, label = 'Imagen', error }
 
     const handleFileSelect = async (file: File) => {
         // Validar tipo de archivo
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif']
         if (!allowedTypes.includes(file.type)) {
-            setUploadError('Tipo de archivo no permitido. Solo se aceptan JPG, PNG y WebP.')
+            setUploadError('Tipo de archivo no permitido. Solo se aceptan JPG, PNG, WebP y AVIF.')
             return
         }
 
-        // Validar tamaño (máx 5MB)
-        const maxSize = 5 * 1024 * 1024
+        // Validar tamaño (máx 500KB)
+        const maxSize = 500 * 1024
         if (file.size > maxSize) {
-            setUploadError('El archivo es demasiado grande. Tamaño máximo: 5MB.')
+            setUploadError('El archivo es demasiado grande. Tamaño máximo: 500KB.')
             return
         }
 
@@ -105,11 +105,12 @@ export default function ImageUpload({ value, onChange, label = 'Imagen', error }
                 // Preview de la imagen
                 <div className="relative group">
                     <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
-                        <Image
+                        <OptimizedImage
                             src={value}
                             alt="Preview"
                             fill
                             className="object-contain"
+                            size="medium"
                         />
                     </div>
                     <button
@@ -130,16 +131,16 @@ export default function ImageUpload({ value, onChange, label = 'Imagen', error }
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragging
-                            ? 'border-primary bg-primary/5'
-                            : error || uploadError
-                                ? 'border-red-500 bg-red-50'
-                                : 'border-gray-300 hover:border-primary hover:bg-gray-50'
+                        ? 'border-primary bg-primary/5'
+                        : error || uploadError
+                            ? 'border-red-500 bg-red-50'
+                            : 'border-gray-300 hover:border-primary hover:bg-gray-50'
                         }`}
                 >
                     <input
                         ref={fileInputRef}
                         type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        accept="image/jpeg,image/jpg,image/png,image/webp,image/avif"
                         onChange={handleFileInputChange}
                         className="hidden"
                         disabled={isUploading}
@@ -159,7 +160,7 @@ export default function ImageUpload({ value, onChange, label = 'Imagen', error }
                                 Arrastra una imagen aquí o haz clic para seleccionar
                             </p>
                             <p className="text-sm text-grimmiz-text-secondary">
-                                JPG, PNG o WebP (máx. 5MB)
+                                JPG, PNG, WebP o AVIF (máx. 500KB)
                             </p>
                         </div>
                     )}

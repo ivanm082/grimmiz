@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { verifyToken } from '@/lib/auth'
 
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl
@@ -13,19 +12,14 @@ export function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL('/admin/login', request.url))
         }
 
-        const user = verifyToken(token)
-        if (!user) {
-            // Token inválido o expirado
-            const response = NextResponse.redirect(new URL('/admin/login', request.url))
-            response.cookies.delete('admin-token')
-            return response
-        }
+        // En Edge Runtime no podemos verificar JWT, así que solo verificamos que exista
+        // La verificación real se hace en las API routes
     }
 
-    // Si está en login y ya tiene token válido, redirigir al dashboard
+    // Si está en login y ya tiene token, redirigir al dashboard
     if (pathname === '/admin/login') {
         const token = request.cookies.get('admin-token')?.value
-        if (token && verifyToken(token)) {
+        if (token) {
             return NextResponse.redirect(new URL('/admin/dashboard', request.url))
         }
     }

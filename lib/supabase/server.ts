@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 export function createClient() {
@@ -56,3 +57,21 @@ export function createClient() {
   )
 }
 
+// Cliente de admin que bypasea RLS usando service role key
+export function createAdminClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error(
+      'Faltan las variables de entorno de Supabase para admin. Por favor, configura NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en tu archivo .env.local'
+    )
+  }
+
+  return createSupabaseClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  })
+}

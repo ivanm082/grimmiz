@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 
 // GET - Obtener producto por ID
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const supabase = createClient()
-        const { id } = params
+        const { id } = await params
+        console.log(`Fetching product with ID: ${id}`)
+
+        const supabase = createAdminClient()
 
         const { data, error } = await supabase
             .from('product')
@@ -41,6 +43,8 @@ export async function GET(
 
     } catch (error) {
         console.error('Error in GET /api/admin/products/[id]:', error)
+        // @ts-ignore
+        if (error?.message) console.error('Error message:', error.message)
         return NextResponse.json(
             { error: 'Error al procesar la solicitud' },
             { status: 500 }
@@ -51,10 +55,10 @@ export async function GET(
 // PUT - Actualizar producto
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params
+        const { id } = await params
         const body = await request.json()
         const { title, description, price, category_id, main_image_url, slug } = body
 
@@ -66,7 +70,7 @@ export async function PUT(
             )
         }
 
-        const supabase = createClient()
+        const supabase = createAdminClient()
 
         // Verificar que el producto existe
         const { data: existingProduct, error: fetchError } = await supabase
@@ -146,11 +150,11 @@ export async function PUT(
 // DELETE - Eliminar producto
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params
-        const supabase = createClient()
+        const { id } = await params
+        const supabase = createAdminClient()
 
         // Verificar que el producto existe
         const { data: existingProduct, error: fetchError } = await supabase

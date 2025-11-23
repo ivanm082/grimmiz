@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
+import OptimizedImage from '@/components/OptimizedImage'
 
 interface ProductImage {
   id: string | number
@@ -27,13 +27,13 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
   }
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     )
   }
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === images.length - 1 ? 0 : prevIndex + 1
     )
   }
@@ -42,11 +42,12 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
     <div className="space-y-4">
       {/* Imagen principal con flechas */}
       <div className="relative w-full h-96 lg:h-[500px] rounded-lg overflow-hidden bg-gray-100 group">
-        <Image
+        <OptimizedImage
           src={images[currentIndex].url}
           alt={images[currentIndex].alt}
           fill
           className="object-cover"
+          size="large"
           priority
         />
 
@@ -59,17 +60,17 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
               className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-grimmiz-text rounded-full p-3 shadow-lg transition-all opacity-0 group-hover:opacity-100 hover:scale-110"
               aria-label="Imagen anterior"
             >
-              <svg 
-                className="w-6 h-6" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M15 19l-7-7 7-7" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
                 />
               </svg>
             </button>
@@ -80,17 +81,17 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
               className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-grimmiz-text rounded-full p-3 shadow-lg transition-all opacity-0 group-hover:opacity-100 hover:scale-110"
               aria-label="Imagen siguiente"
             >
-              <svg 
-                className="w-6 h-6" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M9 5l7 7-7 7" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
                 />
               </svg>
             </button>
@@ -101,11 +102,10 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentIndex 
-                      ? 'bg-white w-8' 
+                  className={`w-2 h-2 rounded-full transition-all ${index === currentIndex
+                      ? 'bg-white w-8'
                       : 'bg-white/60 hover:bg-white/80'
-                  }`}
+                    }`}
                   aria-label={`Ir a imagen ${index + 1}`}
                 />
               ))}
@@ -121,18 +121,17 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
             <button
               key={image.id}
               onClick={() => setCurrentIndex(index)}
-              className={`relative h-20 md:h-24 rounded-lg overflow-hidden transition-all ${
-                index === currentIndex
+              className={`relative h-20 md:h-24 rounded-lg overflow-hidden transition-all ${index === currentIndex
                   ? 'ring-4 ring-primary shadow-lg scale-105'
                   : 'ring-2 ring-gray-200 hover:ring-primary/50 hover:scale-105'
-              }`}
+                }`}
             >
-              <Image
+              <OptimizedImage
                 src={image.url}
                 alt={`${image.alt} - miniatura ${index + 1}`}
                 fill
                 className="object-cover"
-                sizes="120px"
+                size="thumbnail"
               />
               {/* Overlay en la miniatura activa */}
               {index === currentIndex && (

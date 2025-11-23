@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import OptimizedImage from '@/components/OptimizedImage'
 
 interface ProductCardProps {
   id: string
@@ -13,18 +13,18 @@ interface ProductCardProps {
 export default function ProductCard({ id, name, price, image, description, slug }: ProductCardProps) {
   const productSlug = slug || name.toLowerCase().replace(/\s+/g, '-')
   const urlSlug = `${productSlug}-${id}`
-  
+
   return (
     <Link href={`/mundo-grimmiz/${urlSlug}`} className="h-full">
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col">
         <div className="relative h-64 bg-gray-200 flex-shrink-0">
           {image ? (
-            <Image
+            <OptimizedImage
               src={image}
               alt={name}
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              size="small"
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
