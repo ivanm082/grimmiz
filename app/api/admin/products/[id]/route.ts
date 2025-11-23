@@ -1,0 +1,195 @@
+import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+
+// GET - Obtener producto por ID
+export async function GET(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
+    try {
+        const supabase = createClient()
+        const { id } = params
+
+        const { data, error } = await supabase
+            .from('product')
+            .select(`
+        *,
+        category:category_id (
+          id,
+          name,
+          slug
+        ),
+        additional_images:additional_product_images (
+          id,
+          image_url,
+          alt_text,
+          caption,
+          display_order
+        )
+      `)
+            .eq('id', id)
+            .single()
+
+        if (error || !data) {
+            return NextResponse.json(
+                { error: 'Producto no encontrado' },
+                { status: 404 }
+            )
+        }
+
+        return NextResponse.json({ product: data })
+
+    } catch (error) {
+        console.error('Error in GET /api/admin/products/[id]:', error)
+        return NextResponse.json(
+            { error: 'Error al procesar la solicitud' },
+            { status: 500 }
+        )
+    }
+}
+
+// PUT - Actualizar producto
+export async function PUT(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
+    try {
+        const { id } = params
+        const body = await request.json()
+        const { title, description, price, category_id, main_image_url, slug } = body
+
+        // Validar campos requeridos
+        if (!title || !price || !category_id || !slug) {
+            return NextResponse.json(
+                { error: 'Título, precio, categoría y slug son requeridos' },
+                { status: 400 }
+            )
+        }
+
+        const supabase = createClient()
+
+        // Verificar que el producto existe
+        const { data: existingProduct, error: fetchError } = await supabase
+            .from('product')
+            .select('id')
+            .eq('id', id)
+            .single()
+
+        if (fetchError || !existingProduct) {
+            return NextResponse.json(
+                { error: 'Producto no encontrado' },
+                { status: 404 }
+            )
+        }
+
+        // Verificar que la categoría existe
+        const { data: category, error: categoryError } = await supabase
+            .from('category')
+            .select('id')
+            .eq('id', category_id)
+            .single()
+
+        if (categoryError || !category) {
+            return NextResponse.json(
+                { error: 'La categoría especificada no existe' },
+                { status: 400 }
+            )
+        }
+
+        // Actualizar producto
+        const { data, error } = await supabase
+            .from('product')
+            .update({
+                title,
+                description: description || null,
+                price: parseFloat(price),
+                category_id,
+                main_image_url: main_image_url || null,
+                slug,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
+            .select()
+            .single()
+
+        if (error) {
+            console.error('Error updating product:', error)
+
+            // Verificar si es error de slug duplicado
+            if (error.code === '23505') {
+                return NextResponse.json(
+                    { error: 'Ya existe un producto con ese slug' },
+                    { status: 400 }
+                )
+            }
+
+            return NextResponse.json(
+                { error: 'Error al actualizar el producto' },
+                { status: 500 }
+            )
+        }
+
+        return NextResponse.json(
+            { product: data, message: 'Producto actualizado exitosamente' },
+            { status: 200 }
+        )
+
+    } catch (error) {
+        console.error('Error in PUT /api/admin/products/[id]:', error)
+        return NextResponse.json(
+            { error: 'Error al procesar la solicitud' },
+            { status: 500 }
+        )
+    }
+}
+
+// DELETE - Eliminar producto
+export async function DELETE(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
+    try {
+        const { id } = params
+        const supabase = createClient()
+
+        // Verificar que el producto existe
+        const { data: existingProduct, error: fetchError } = await supabase
+            .from('product')
+            .select('id')
+            .eq('id', id)
+            .single()
+
+        if (fetchError || !existingProduct) {
+            return NextResponse.json(
+                { error: 'Producto no encontrado' },
+                { status: 404 }
+            )
+        }
+
+        // Eliminar producto (cascade eliminará imágenes adicionales)
+        const { error } = await supabase
+            .from('product')
+            .delete()
+            .eq('id', id)
+
+        if (error) {
+            console.error('Error deleting product:', error)
+            return NextResponse.json(
+                { error: 'Error al eliminar el producto' },
+                { status: 500 }
+            )
+        }
+
+        return NextResponse.json(
+            { message: 'Producto eliminado exitosamente' },
+            { status: 200 }
+        )
+
+    } catch (error) {
+        console.error('Error in DELETE /api/admin/products/[id]:', error)
+        return NextResponse.json(
+            { error: 'Error al procesar la solicitud' },
+            { status: 500 }
+        )
+    }
+}
