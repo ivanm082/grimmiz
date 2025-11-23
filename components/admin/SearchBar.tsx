@@ -10,12 +10,14 @@ interface Category {
 interface SearchBarProps {
     onSearch: (search: string, categoryId: string) => void
     categories: Category[]
+    initialSearch?: string
+    initialCategoryId?: string
 }
 
-export default function SearchBar({ onSearch, categories }: SearchBarProps) {
-    const [search, setSearch] = useState('')
-    const [categoryId, setCategoryId] = useState('')
-    const [debouncedSearch, setDebouncedSearch] = useState('')
+export default function SearchBar({ onSearch, categories, initialSearch = '', initialCategoryId = '' }: SearchBarProps) {
+    const [search, setSearch] = useState(initialSearch)
+    const [categoryId, setCategoryId] = useState(initialCategoryId)
+    const [debouncedSearch, setDebouncedSearch] = useState(initialSearch)
 
     // Debounce search input
     useEffect(() => {

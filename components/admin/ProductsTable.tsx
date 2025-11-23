@@ -2,6 +2,7 @@
 
 import OptimizedImage from '@/components/OptimizedImage'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 interface Product {
     id: number
@@ -20,9 +21,16 @@ interface ProductsTableProps {
     products: Product[]
     onDelete: (id: number, title: string) => void
     isLoading?: boolean
+    returnUrl: string
 }
 
-export default function ProductsTable({ products, onDelete, isLoading = false }: ProductsTableProps) {
+export default function ProductsTable({ products, onDelete, isLoading = false, returnUrl }: ProductsTableProps) {
+    const searchParams = useSearchParams()
+
+    const getEditUrl = (productId: number) => {
+        return `/admin/products/${productId}/edit?returnUrl=${encodeURIComponent(returnUrl)}`
+    }
+
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('es-ES', {
             style: 'currency',
@@ -150,7 +158,7 @@ export default function ProductsTable({ products, onDelete, isLoading = false }:
                                             </svg>
                                         </a>
                                         <Link
-                                            href={`/admin/products/${product.id}/edit`}
+                                            href={getEditUrl(product.id)}
                                             className="text-primary hover:text-primary-dark transition-colors"
                                         >
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,7 +238,7 @@ export default function ProductsTable({ products, onDelete, isLoading = false }:
                                         </svg>
                                     </a>
                                     <Link
-                                        href={`/admin/products/${product.id}/edit`}
+                                        href={getEditUrl(product.id)}
                                         className="flex-1 px-3 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-center"
                                     >
                                         Editar

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ProductsTable from '@/components/admin/ProductsTable'
 import SearchBar from '@/components/admin/SearchBar'
@@ -14,6 +15,7 @@ interface Product {
     price: number
     main_image_url: string | null
     created_at: string
+    slug: string
     category: {
         id: number
         name: string
@@ -26,14 +28,20 @@ interface Category {
 }
 
 export default function ProductsPage() {
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+
     const [products, setProducts] = useState<Product[]>([])
     const [categories, setCategories] = useState<Category[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [currentPage, setCurrentPage] = useState(1)
+
+    // Inicializar estado desde URL
+    const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1)
     const [totalPages, setTotalPages] = useState(1)
     const [totalItems, setTotalItems] = useState(0)
-    const [search, setSearch] = useState('')
-    const [categoryFilter, setCategoryFilter] = useState('')
+    const [search, setSearch] = useState(searchParams.get('search') || '')
+    const [categoryFilter, setCategoryFilter] = useState(searchParams.get('category_id') || '')
     const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; productId: number | null; productName: string }>({
         isOpen: false,
         productId: null,
@@ -57,6 +65,19 @@ export default function ProductsPage() {
 
         fetchCategories()
     }, [])
+
+    // Sincronizar URL con estado
+    useEffect(() => {
+        const params = new URLSearchParams()
+        if (currentPage > 1) params.set('page', currentPage.toString())
+        if (search) params.set('search', search)
+        if (categoryFilter) params.set('category_id', categoryFilter)
+
+        const queryString = params.toString()
+        const url = queryString ? `${pathname}?${queryString}` : pathname
+
+        router.replace(url, { scroll: false })
+    }, [currentPage, search, categoryFilter, pathname, router])
 
     // Cargar productos
     const fetchProducts = useCallback(async () => {
@@ -143,6 +164,22 @@ export default function ProductsPage() {
         setDeleteModal({ isOpen: false, productId: null, productName: '' })
     }
 
+    const getReturnUrl = () => {
+        const params = new URLSearchParams()
+        if (currentPage > 1) params.set('page', currentPage.toString())
+        if (search) params.set('search', search)
+        if (categoryFilter) params.set('category_id', categoryFilter)
+
+        const queryString = params.toString()
+        return `/admin/products${queryString ? `?${queryString}` : ''}`
+    }
+
+    const returnUrl = getReturnUrl()
+
+    const getNewProductUrl = () => {
+        return `/admin/products/new?returnUrl=${encodeURIComponent(returnUrl)}`
+    }
+
     return (
         <AdminLayout>
             <div className="max-w-7xl mx-auto">
@@ -155,7 +192,7 @@ export default function ProductsPage() {
                         </p>
                     </div>
                     <Link
-                        href="/admin/products/new"
+                        href={getNewProductUrl()}
                         className="px-6 py-3 bg-secondary text-white rounded-lg font-semibold hover:bg-secondary-dark transition-colors shadow-lg hover:shadow-xl flex items-center"
                     >
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,13 +203,19 @@ export default function ProductsPage() {
                 </div>
 
                 {/* Search and filters */}
-                <SearchBar onSearch={handleSearch} categories={categories} />
+                <SearchBar
+                    onSearch={handleSearch}
+                    categories={categories}
+                    initialSearch={search}
+                    initialCategoryId={categoryFilter}
+                />
 
                 {/* Products table */}
                 <ProductsTable
                     products={products}
                     onDelete={handleDeleteClick}
                     isLoading={isLoading}
+                    returnUrl={returnUrl}
                 />
 
                 {/* Pagination */}

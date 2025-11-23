@@ -1,12 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ProductForm from '@/components/admin/ProductForm'
 
 export default function EditProductPage() {
     const params = useParams()
+    const searchParams = useSearchParams()
+    const returnUrl = searchParams.get('returnUrl')
     const productId = params.id as string
     const [product, setProduct] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -70,7 +72,7 @@ export default function EditProductPage() {
 
                 {/* Form */}
                 {product && !isLoading && (
-                    <ProductForm mode="edit" product={product} />
+                    <ProductForm mode="edit" product={product} returnUrl={returnUrl} />
                 )}
             </div>
         </AdminLayout>

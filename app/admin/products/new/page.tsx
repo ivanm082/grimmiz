@@ -1,7 +1,13 @@
+'use client'
+
+import { useSearchParams } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ProductForm from '@/components/admin/ProductForm'
 
 export default function NewProductPage() {
+    const searchParams = useSearchParams()
+    const returnUrl = searchParams.get('returnUrl')
+
     return (
         <AdminLayout>
             <div className="max-w-4xl mx-auto">
@@ -14,7 +20,7 @@ export default function NewProductPage() {
                 </div>
 
                 {/* Form */}
-                <ProductForm mode="create" />
+                <ProductForm mode="create" returnUrl={returnUrl} />
             </div>
         </AdminLayout>
     )

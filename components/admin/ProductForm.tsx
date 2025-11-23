@@ -22,9 +22,10 @@ interface Product {
 interface ProductFormProps {
     product?: Product
     mode: 'create' | 'edit'
+    returnUrl?: string | null
 }
 
-export default function ProductForm({ product, mode }: ProductFormProps) {
+export default function ProductForm({ product, mode, returnUrl }: ProductFormProps) {
     const router = useRouter()
     const [categories, setCategories] = useState<Category[]>([])
     const [isLoadingCategories, setIsLoadingCategories] = useState(true)
@@ -169,8 +170,12 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
                 throw new Error(data.error || 'Error al guardar el producto')
             }
 
-            // Redirigir a la lista de productos
-            router.push('/admin/products')
+            // Redirigir a la lista de productos o URL de retorno
+            if (returnUrl) {
+                router.push(returnUrl)
+            } else {
+                router.push('/admin/products')
+            }
         } catch (error: any) {
             console.error('Error submitting form:', error)
             setSubmitError(error.message || 'Error al guardar el producto')
@@ -194,7 +199,11 @@ export default function ProductForm({ product, mode }: ProductFormProps) {
                 console.error('Error deleting unused image:', error)
             }
         }
-        router.back()
+        if (returnUrl) {
+            router.push(returnUrl)
+        } else {
+            router.back()
+        }
     }
 
     if (isLoadingCategories) {
