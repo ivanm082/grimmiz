@@ -4,6 +4,7 @@ import { useState, useEffect, FormEvent, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUpload from './ImageUpload'
 import AdditionalImagesManager, { AdditionalImagesManagerRef } from './AdditionalImagesManager'
+import TagInput from './TagInput'
 import { generateSlug } from '@/lib/utils'
 
 interface Category {
@@ -38,6 +39,7 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState('')
     const [newlyUploadedImage, setNewlyUploadedImage] = useState<string | null>(null)
+    const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
 
     const [formData, setFormData] = useState({
         title: product?.title || '',
@@ -75,6 +77,24 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
 
         fetchCategories()
     }, [])
+
+    // Cargar etiquetas del producto en modo edición
+    useEffect(() => {
+        if (mode === 'edit' && product?.id) {
+            const fetchProductTags = async () => {
+                try {
+                    const response = await fetch(`/api/admin/products/${product.id}/tags`)
+                    const data = await response.json()
+                    const tagIds = data.tags?.map((tag: any) => tag.id) || []
+                    setSelectedTagIds(tagIds)
+                } catch (error) {
+                    console.error('Error loading product tags:', error)
+                }
+            }
+
+            fetchProductTags()
+        }
+    }, [mode, product?.id])
 
     const handleChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }))
@@ -182,6 +202,23 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
 
             if (!response.ok) {
                 throw new Error(data.error || 'Error al guardar el producto')
+            }
+
+            // Guardar etiquetas (tanto en creación como en edición)
+            const productId = mode === 'create' ? data.product.id : product?.id
+            if (productId) {
+                try {
+                    await fetch(`/api/admin/products/${productId}/tags`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ tagIds: selectedTagIds }),
+                    })
+                } catch (tagError) {
+                    console.error('Error saving tags:', tagError)
+                    // No lanzamos error aquí para no bloquear la navegación
+                }
             }
 
             // Redirigir a la lista de productos o URL de retorno
@@ -361,6 +398,35 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
                     </div>
                 </div>
 
+                {/* Etiquetas */}
+                <TagInput
+                    productId={product?.id}
+                    value={selectedTagIds}
+                    onChange={setSelectedTagIds}
+                />
+
+                {/* Imagen principal */}
+                <ImageUpload
+                    value={formData.main_image_url}
+                    onChange={(url) => handleChange('main_image_url', url)}
+                    label="Imagen Principal"
+                />
+
+                {/* Imágenes adicionales - solo en modo edición */}
+                {mode === 'edit' && product?.id && (
+                    <div className="pt-6 border-t border-gray-200">
+                        <AdditionalImagesManager ref={additionalImagesRef} productId={product.id} />
+                    </div>
+                )}
+
+                {mode === 'create' && (
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-blue-800 text-sm">
+                            💡 <strong>Tip:</strong> Guarda el producto primero para poder añadir imágenes adicionales a la galería.
+                        </p>
+                    </div>
+                )}
+
                 {/* Sección de campos internos */}
                 <div className="pt-6 border-t border-gray-200">
                     <h3 className="text-lg font-semibold text-grimmiz-text mb-4 flex items-center">
@@ -431,28 +497,6 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
                         </div>
                     </div>
                 </div>
-
-                {/* Imagen principal */}
-                <ImageUpload
-                    value={formData.main_image_url}
-                    onChange={(url) => handleChange('main_image_url', url)}
-                    label="Imagen Principal"
-                />
-
-                {/* Imágenes adicionales - solo en modo edición */}
-                {mode === 'edit' && product?.id && (
-                    <div className="pt-6 border-t border-gray-200">
-                        <AdditionalImagesManager ref={additionalImagesRef} productId={product.id} />
-                    </div>
-                )}
-
-                {mode === 'create' && (
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-blue-800 text-sm">
-                            💡 <strong>Tip:</strong> Guarda el producto primero para poder añadir imágenes adicionales a la galería.
-                        </p>
-                    </div>
-                )}
 
                 {/* Botones */}
                 <div className="flex gap-4 pt-4 border-t border-gray-200">

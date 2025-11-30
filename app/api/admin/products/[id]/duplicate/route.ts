@@ -85,6 +85,28 @@ export async function POST(
             )
         }
 
+        // Clonar las etiquetas del producto original
+        const { data: originalTags } = await supabase
+            .from('product_tag')
+            .select('tag_id')
+            .eq('product_id', id)
+
+        if (originalTags && originalTags.length > 0) {
+            const newProductTags = originalTags.map(tag => ({
+                product_id: duplicatedProduct.id,
+                tag_id: tag.tag_id
+            }))
+
+            const { error: tagsError } = await supabase
+                .from('product_tag')
+                .insert(newProductTags)
+
+            if (tagsError) {
+                console.error('Error duplicating tags:', tagsError)
+                // No lanzamos error aquí, el producto ya se creó exitosamente
+            }
+        }
+
         return NextResponse.json(
             {
                 product: duplicatedProduct,

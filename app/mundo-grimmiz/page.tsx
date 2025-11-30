@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 interface MundoGrimmizPageProps {
   searchParams: {
     categoria?: string
+    etiqueta?: string
     orden?: string
     pagina?: string
   }
@@ -20,6 +21,7 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
 
   // Obtener parámetros de búsqueda
   const categorySlug = searchParams.categoria
+  const tagSlug = searchParams.etiqueta
   const sortOrder = searchParams.orden || 'recientes'
   const currentPage = parseInt(searchParams.pagina || '1', 10)
 
@@ -28,6 +30,31 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
     .from('category')
     .select('*')
     .order('name', { ascending: true })
+
+  // Si hay filtro por etiqueta, obtener los IDs de productos con esa etiqueta
+  let productIdsWithTag: number[] | null = null
+  let selectedTag = null
+  
+  if (tagSlug) {
+    // Obtener la etiqueta por slug
+    const { data: tag } = await supabase
+      .from('tag')
+      .select('*')
+      .eq('slug', tagSlug)
+      .single()
+
+    if (tag) {
+      selectedTag = tag
+      
+      // Obtener los IDs de productos que tienen esta etiqueta
+      const { data: productTags } = await supabase
+        .from('product_tag')
+        .select('product_id')
+        .eq('tag_id', tag.id)
+
+      productIdsWithTag = productTags?.map(pt => pt.product_id) || []
+    }
+  }
 
   // Construir query de productos
   let query = supabase
@@ -39,6 +66,16 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
     const selectedCategory = categories?.find(cat => cat.slug === categorySlug)
     if (selectedCategory) {
       query = query.eq('category_id', selectedCategory.id)
+    }
+  }
+
+  // Filtrar por etiqueta si se especifica
+  if (productIdsWithTag !== null) {
+    if (productIdsWithTag.length === 0) {
+      // Si no hay productos con esa etiqueta, retornar vacío
+      query = query.eq('id', -1) // ID que nunca existirá
+    } else {
+      query = query.in('id', productIdsWithTag)
     }
   }
 
@@ -84,6 +121,7 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
   const buildPaginationUrl = (pageNum: number) => {
     const params = new URLSearchParams()
     if (categorySlug) params.set('categoria', categorySlug)
+    if (tagSlug) params.set('etiqueta', tagSlug)
     if (sortOrder && sortOrder !== 'recientes') params.set('orden', sortOrder)
     if (pageNum > 1) params.set('pagina', pageNum.toString())
 
@@ -111,6 +149,19 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
                   </Link>
                   <span>/</span>
                   <span className="text-grimmiz-text font-medium">{selectedCategory.name}</span>
+                </>
+              ) : selectedTag ? (
+                <>
+                  <Link href="/mundo-grimmiz" className="hover:text-primary transition-colors">
+                    Mundo Grimmiz
+                  </Link>
+                  <span>/</span>
+                  <span className="text-grimmiz-text font-medium flex items-center">
+                    <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    {selectedTag.name}
+                  </span>
                 </>
               ) : (
                 <span className="text-grimmiz-text font-medium">Mundo Grimmiz</span>
