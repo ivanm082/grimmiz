@@ -33,11 +33,16 @@ export default async function EditCategoryPage({ params }: PageProps) {
 
     return (
         <AdminLayout>
-            <div className="max-w-7xl mx-auto space-y-6">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold text-grimmiz-text">Editar Categoría</h1>
+            <div className="max-w-4xl mx-auto">
+                {/* Header */}
+                <div className="mb-6">
+                    <h1 className="text-3xl font-bold text-grimmiz-text mb-2">Editar Categoría</h1>
+                    <p className="text-grimmiz-text-secondary">
+                        Modifica la información de la categoría
+                    </p>
                 </div>
 
+                {/* Form */}
                 <CategoryForm category={category} mode="edit" />
             </div>
         </AdminLayout>
