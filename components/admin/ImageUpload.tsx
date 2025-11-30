@@ -8,9 +8,10 @@ interface ImageUploadProps {
     onChange: (url: string) => void
     label?: string
     error?: string
+    folder?: string
 }
 
-export default function ImageUpload({ value, onChange, label = 'Imagen', error }: ImageUploadProps) {
+export default function ImageUpload({ value, onChange, label = 'Imagen', error, folder = 'products' }: ImageUploadProps) {
     const [isUploading, setIsUploading] = useState(false)
     const [uploadError, setUploadError] = useState('')
     const [isDragging, setIsDragging] = useState(false)
@@ -38,6 +39,7 @@ export default function ImageUpload({ value, onChange, label = 'Imagen', error }
             // Crear FormData para enviar el archivo
             const formData = new FormData()
             formData.append('file', file)
+            formData.append('folder', folder)
 
             // Subir a Supabase Storage a través de una API route
             const response = await fetch('/api/admin/upload', {

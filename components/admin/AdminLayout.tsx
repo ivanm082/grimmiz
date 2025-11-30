@@ -25,6 +25,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const navigation = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: '📊' },
         { name: 'Productos', href: '/admin/products', icon: '🛍️' },
+        { name: 'Categorías', href: '/admin/categories', icon: '🏷️' },
     ]
 
     return (
@@ -65,8 +66,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                                     key={item.href}
                                     href={item.href}
                                     className={`flex items-center px-4 py-3 rounded-lg transition-colors ${isActive
-                                            ? 'bg-secondary text-white'
-                                            : 'text-white hover:bg-primary-light'
+                                        ? 'bg-secondary text-white'
+                                        : 'text-white hover:bg-primary-light'
                                         }`}
                                     onClick={() => setIsSidebarOpen(false)}
                                 >

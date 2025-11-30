@@ -4,6 +4,7 @@ import { useState, useEffect, FormEvent, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUpload from './ImageUpload'
 import AdditionalImagesManager, { AdditionalImagesManagerRef } from './AdditionalImagesManager'
+import { generateSlug } from '@/lib/utils'
 
 interface Category {
     id: number
@@ -67,18 +68,6 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
 
         fetchCategories()
     }, [])
-
-    // Generar slug automáticamente desde el título
-    const generateSlug = (title: string) => {
-        return title
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-            .replace(/[^a-z0-9\s-]/g, '') // Eliminar caracteres especiales
-            .trim()
-            .replace(/\s+/g, '-') // Reemplazar espacios con guiones
-            .replace(/-+/g, '-') // Eliminar guiones múltiples
-    }
 
     const handleChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }))

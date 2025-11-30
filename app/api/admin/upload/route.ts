@@ -5,6 +5,7 @@ export async function POST(request: Request) {
     try {
         const formData = await request.formData()
         const file = formData.get('file') as File
+        const folder = formData.get('folder') as string || 'products'
 
         if (!file) {
             return NextResponse.json(
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
         }
 
         // Subir imagen a Supabase Storage
-        const result = await uploadImage(file, 'products')
+        const result = await uploadImage(file, folder)
 
         if ('error' in result) {
             return NextResponse.json(
