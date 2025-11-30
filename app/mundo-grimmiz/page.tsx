@@ -190,6 +190,7 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
             <ProductFilters
               categories={categories || []}
               currentCategory={categorySlug}
+              currentTag={selectedTag}
               currentSort={sortOrder}
             />
           </div>
