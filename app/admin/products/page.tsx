@@ -48,6 +48,7 @@ export default function ProductsPage() {
         productName: ''
     })
     const [isDeleting, setIsDeleting] = useState(false)
+    const [isDuplicating, setIsDuplicating] = useState(false)
 
     const itemsPerPage = 10
 
@@ -164,6 +165,39 @@ export default function ProductsPage() {
         setDeleteModal({ isOpen: false, productId: null, productName: '' })
     }
 
+    const handleDuplicate = async (productId: number) => {
+        if (isDuplicating) return
+
+        if (!confirm('¿Estás seguro de que quieres duplicar este producto? Se creará una copia sin imágenes.')) {
+            return
+        }
+
+        setIsDuplicating(true)
+        try {
+            const response = await fetch(`/api/admin/products/${productId}/duplicate`, {
+                method: 'POST'
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al duplicar el producto')
+            }
+
+            // Mostrar mensaje de éxito
+            alert('Producto duplicado exitosamente')
+
+            // Recargar productos
+            await fetchProducts()
+
+        } catch (error: any) {
+            console.error('Error duplicating product:', error)
+            alert(error.message || 'Error al duplicar el producto. Por favor, inténtalo de nuevo.')
+        } finally {
+            setIsDuplicating(false)
+        }
+    }
+
     const getReturnUrl = () => {
         const params = new URLSearchParams()
         if (currentPage > 1) params.set('page', currentPage.toString())
@@ -214,6 +248,7 @@ export default function ProductsPage() {
                 <ProductsTable
                     products={products}
                     onDelete={handleDeleteClick}
+                    onDuplicate={handleDuplicate}
                     isLoading={isLoading}
                     returnUrl={returnUrl}
                 />
