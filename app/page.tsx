@@ -48,7 +48,7 @@ export default async function Home() {
     // Intentar con order, si falla intentar sin order
     let query = supabase
       .from('product')
-      .select('*')
+      .select('id, title, description, price, main_image_url, slug, category_id')
       .limit(4)
     
     let { data, error } = await query.order('created_at', { ascending: false })
@@ -57,7 +57,7 @@ export default async function Home() {
     if (error && error.message?.includes('created_at')) {
       const result = await supabase
         .from('product')
-        .select('*')
+        .select('id, title, description, price, main_image_url, slug, category_id')
         .limit(4)
       data = result.data
       error = result.error

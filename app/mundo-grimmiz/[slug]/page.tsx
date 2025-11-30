@@ -62,7 +62,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { data: product, error: productError } = await supabase
     .from('product')
     .select(`
-      *,
+      id,
+      title,
+      description,
+      price,
+      main_image_url,
+      slug,
+      created_at,
+      updated_at,
+      category_id,
       category:category_id (
         id,
         name,
@@ -111,7 +119,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // Obtener productos relacionados de la misma categoría
   const { data: relatedProducts } = await supabase
     .from('product')
-    .select('*')
+    .select('id, title, description, price, main_image_url, slug, category_id')
     .eq('category_id', product.category_id)
     .neq('id', product.id)
     .limit(4)

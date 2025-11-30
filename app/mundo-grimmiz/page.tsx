@@ -32,7 +32,7 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
   // Construir query de productos
   let query = supabase
     .from('product')
-    .select('*, category:category_id(id, name, slug)', { count: 'exact' })
+    .select('id, title, description, price, main_image_url, slug, category_id, updated_at, category:category_id(id, name, slug)', { count: 'exact' })
 
   // Filtrar por categoría si se especifica
   if (categorySlug) {

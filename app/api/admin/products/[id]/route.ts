@@ -61,7 +61,7 @@ export async function PUT(
     try {
         const { id } = await params
         const body = await request.json()
-        const { title, description, price, category_id, main_image_url, slug } = body
+        const { title, description, price, category_id, main_image_url, slug, internal_notes, materials, stock } = body
 
         // Validar campos requeridos
         if (!title || !price || !category_id || !slug) {
@@ -125,6 +125,9 @@ export async function PUT(
                 category_id,
                 main_image_url: main_image_url || null,
                 slug,
+                internal_notes: internal_notes || null,
+                materials: materials || null,
+                stock: stock !== null && stock !== undefined ? parseInt(stock) : null,
                 updated_at: new Date().toISOString()
             })
             .eq('id', id)

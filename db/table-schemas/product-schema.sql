@@ -8,6 +8,10 @@ create table public.product (
   category_id bigint not null,
   main_image_url character varying null,
   slug character varying not null,
+  internal_notes text null,
+  materials text null,
+  stock integer null,
   constraint producto_pkey primary key (id),
-  constraint producto_category_id_fkey foreign KEY (category_id) references category (id) on update CASCADE on delete RESTRICT
+  constraint producto_category_id_fkey foreign KEY (category_id) references category (id) on update CASCADE on delete RESTRICT,
+  constraint product_stock_check check (stock >= 0)
 ) TABLESPACE pg_default;

@@ -83,7 +83,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json()
-        const { title, description, price, category_id, main_image_url, slug } = body
+        const { title, description, price, category_id, main_image_url, slug, internal_notes, materials, stock } = body
 
         // Validar campos requeridos
         if (!title || !price || !category_id || !slug) {
@@ -119,7 +119,10 @@ export async function POST(request: Request) {
                     price: parseFloat(price),
                     category_id,
                     main_image_url: main_image_url || null,
-                    slug
+                    slug,
+                    internal_notes: internal_notes || null,
+                    materials: materials || null,
+                    stock: stock !== null && stock !== undefined ? parseInt(stock) : null
                 }
             ])
             .select()

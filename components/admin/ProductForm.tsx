@@ -19,6 +19,9 @@ interface Product {
     category_id: number
     main_image_url: string
     slug: string
+    internal_notes?: string
+    materials?: string
+    stock?: number
 }
 
 interface ProductFormProps {
@@ -42,14 +45,18 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
         price: product?.price?.toString() || '',
         category_id: product?.category_id?.toString() || '',
         main_image_url: product?.main_image_url || '',
-        slug: product?.slug || ''
+        slug: product?.slug || '',
+        internal_notes: product?.internal_notes || '',
+        materials: product?.materials || '',
+        stock: product?.stock?.toString() || ''
     })
 
     const [errors, setErrors] = useState({
         title: '',
         price: '',
         category_id: '',
-        slug: ''
+        slug: '',
+        stock: ''
     })
 
     // Cargar categorías
@@ -96,7 +103,8 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
             title: '',
             price: '',
             category_id: '',
-            slug: ''
+            slug: '',
+            stock: ''
         }
 
         if (!formData.title.trim()) {
@@ -117,6 +125,18 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
             newErrors.slug = 'El slug es obligatorio'
         } else if (!/^[a-z0-9-]+$/.test(formData.slug)) {
             newErrors.slug = 'El slug solo puede contener letras minúsculas, números y guiones'
+        }
+
+        // Validar stock si se proporciona
+        if (formData.stock) {
+            const stockValue = Number(formData.stock)
+            if (isNaN(stockValue)) {
+                newErrors.stock = 'El stock debe ser un número'
+            } else if (!Number.isInteger(stockValue)) {
+                newErrors.stock = 'El stock debe ser un número entero'
+            } else if (stockValue < 0) {
+                newErrors.stock = 'El stock no puede ser negativo'
+            }
         }
 
         setErrors(newErrors)
@@ -151,7 +171,10 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
                     price: parseFloat(formData.price),
                     category_id: parseInt(formData.category_id),
                     main_image_url: formData.main_image_url || null,
-                    slug: formData.slug
+                    slug: formData.slug,
+                    internal_notes: formData.internal_notes || null,
+                    materials: formData.materials || null,
+                    stock: formData.stock ? parseInt(formData.stock) : null
                 }),
             })
 
@@ -335,6 +358,77 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
                         {errors.category_id && (
                             <p className="text-red-500 text-sm mt-1">{errors.category_id}</p>
                         )}
+                    </div>
+                </div>
+
+                {/* Sección de campos internos */}
+                <div className="pt-6 border-t border-gray-200">
+                    <h3 className="text-lg font-semibold text-grimmiz-text mb-4 flex items-center">
+                        <svg className="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Información Interna
+                    </h3>
+                    <p className="text-sm text-grimmiz-text-secondary mb-4">
+                        Esta información es solo para uso interno y no se mostrará en la página pública
+                    </p>
+
+                    <div className="space-y-6">
+                        {/* Materiales */}
+                        <div>
+                            <label htmlFor="materials" className="block text-sm font-semibold text-grimmiz-text mb-2">
+                                Materiales
+                            </label>
+                            <textarea
+                                id="materials"
+                                value={formData.materials}
+                                onChange={(e) => handleChange('materials', e.target.value)}
+                                rows={4}
+                                placeholder="Lista de materiales utilizados en el producto"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-none"
+                            />
+                        </div>
+
+                        {/* Notas internas */}
+                        <div>
+                            <label htmlFor="internal_notes" className="block text-sm font-semibold text-grimmiz-text mb-2">
+                                Notas Internas
+                            </label>
+                            <textarea
+                                id="internal_notes"
+                                value={formData.internal_notes}
+                                onChange={(e) => handleChange('internal_notes', e.target.value)}
+                                rows={4}
+                                placeholder="Notas internas sobre el producto"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-none"
+                            />
+                        </div>
+
+                        {/* Stock */}
+                        <div>
+                            <label htmlFor="stock" className="block text-sm font-semibold text-grimmiz-text mb-2">
+                                Stock
+                            </label>
+                            <input
+                                type="number"
+                                id="stock"
+                                value={formData.stock}
+                                onChange={(e) => handleChange('stock', e.target.value)}
+                                placeholder="Unidades disponibles"
+                                step="1"
+                                min="0"
+                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.stock
+                                    ? 'border-red-500 focus:ring-red-500'
+                                    : 'border-gray-300 focus:ring-primary focus:border-primary'
+                                    }`}
+                            />
+                            {errors.stock && (
+                                <p className="text-red-500 text-sm mt-1">{errors.stock}</p>
+                            )}
+                            <p className="text-xs text-grimmiz-text-secondary mt-1">
+                                Solo números enteros positivos
+                            </p>
+                        </div>
                     </div>
                 </div>
 
