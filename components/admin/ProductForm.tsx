@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, FormEvent } from 'react'
+import { useState, useEffect, FormEvent, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUpload from './ImageUpload'
+import AdditionalImagesManager, { AdditionalImagesManagerRef } from './AdditionalImagesManager'
 
 interface Category {
     id: number
@@ -27,6 +28,7 @@ interface ProductFormProps {
 
 export default function ProductForm({ product, mode, returnUrl }: ProductFormProps) {
     const router = useRouter()
+    const additionalImagesRef = useRef<AdditionalImagesManagerRef>(null)
     const [categories, setCategories] = useState<Category[]>([])
     const [isLoadingCategories, setIsLoadingCategories] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -185,7 +187,7 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
     }
 
     const handleCancel = async () => {
-        // Si hay una imagen recién subida y es diferente a la original (o no había original), borrarla
+        // Si hay una imagen principal recién subida y es diferente a la original, borrarla
         if (newlyUploadedImage && newlyUploadedImage !== product?.main_image_url) {
             try {
                 await fetch('/api/admin/upload', {
@@ -196,9 +198,19 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
                     body: JSON.stringify({ url: newlyUploadedImage }),
                 })
             } catch (error) {
-                console.error('Error deleting unused image:', error)
+                console.error('Error deleting unused main image:', error)
             }
         }
+
+        // Limpiar imágenes adicionales recién subidas
+        if (additionalImagesRef.current) {
+            try {
+                await additionalImagesRef.current.cleanupNewImages()
+            } catch (error) {
+                console.error('Error cleaning up additional images:', error)
+            }
+        }
+
         if (returnUrl) {
             router.push(returnUrl)
         } else {
@@ -343,6 +355,21 @@ export default function ProductForm({ product, mode, returnUrl }: ProductFormPro
                     onChange={(url) => handleChange('main_image_url', url)}
                     label="Imagen Principal"
                 />
+
+                {/* Imágenes adicionales - solo en modo edición */}
+                {mode === 'edit' && product?.id && (
+                    <div className="pt-6 border-t border-gray-200">
+                        <AdditionalImagesManager ref={additionalImagesRef} productId={product.id} />
+                    </div>
+                )}
+
+                {mode === 'create' && (
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-blue-800 text-sm">
+                            💡 <strong>Tip:</strong> Guarda el producto primero para poder añadir imágenes adicionales a la galería.
+                        </p>
+                    </div>
+                )}
 
                 {/* Botones */}
                 <div className="flex gap-4 pt-4 border-t border-gray-200">

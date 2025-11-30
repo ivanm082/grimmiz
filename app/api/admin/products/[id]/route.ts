@@ -185,8 +185,13 @@ export async function DELETE(
             )
         }
 
+        // Obtener todas las imágenes adicionales para borrarlas del storage
+        const { data: additionalImages } = await supabase
+            .from('additional_product_images')
+            .select('image_url')
+            .eq('product_id', id)
+
         // Eliminar producto (cascade eliminará imágenes adicionales de la DB)
-        // Pero necesitamos borrar la imagen principal del Storage manualmente
         const { error } = await supabase
             .from('product')
             .delete()
@@ -200,15 +205,28 @@ export async function DELETE(
             )
         }
 
-        // Si se eliminó correctamente, borrar la imagen del storage
+        // Si se eliminó correctamente, borrar la imagen principal del storage
         if (existingProduct.main_image_url) {
             const imagePath = extractPathFromUrl(existingProduct.main_image_url)
             if (imagePath) {
-                console.log(`Deleting product image: ${imagePath}`)
+                console.log(`Deleting product main image: ${imagePath}`)
                 deleteImage(imagePath).catch(err =>
-                    console.error('Failed to delete image after product deletion:', err)
+                    console.error('Failed to delete main image after product deletion:', err)
                 )
             }
+        }
+
+        // Borrar todas las imágenes adicionales del storage
+        if (additionalImages && additionalImages.length > 0) {
+            console.log(`Deleting ${additionalImages.length} additional images`)
+            additionalImages.forEach(img => {
+                const imagePath = extractPathFromUrl(img.image_url)
+                if (imagePath) {
+                    deleteImage(imagePath).catch(err =>
+                        console.error('Failed to delete additional image:', err)
+                    )
+                }
+            })
         }
 
         return NextResponse.json(

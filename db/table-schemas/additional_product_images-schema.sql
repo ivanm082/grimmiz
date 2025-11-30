@@ -8,6 +8,6 @@ create table public.additional_product_images (
   caption character varying null,
   display_order integer not null,
   constraint additional_product_images_pkey primary key (id),
-  constraint additional_product_images_display_order_key unique (display_order),
+  constraint additional_product_images_product_display_order_key unique (product_id, display_order),
   constraint additional_product_images_product_id_fkey foreign KEY (product_id) references product (id) on update CASCADE on delete CASCADE
 ) TABLESPACE pg_default;
