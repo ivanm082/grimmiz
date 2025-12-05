@@ -4,26 +4,22 @@ import ProductCard from '@/components/ProductCard'
 import ProductFilters from '@/components/ProductFilters'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { buildProductListUrl, type ProductFilters as Filters } from '@/lib/url-builder'
 
-interface MundoGrimmizPageProps {
-  searchParams: {
-    categoria?: string
-    etiqueta?: string
-    orden?: string
-    pagina?: string
-  }
+interface MundoGrimmizContentProps {
+  filters: Filters
 }
 
 const PRODUCTS_PER_PAGE = 12
 
-export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPageProps) {
+export default async function MundoGrimmizContent({ filters }: MundoGrimmizContentProps) {
   const supabase = createClient()
 
-  // Obtener parámetros de búsqueda
-  const categorySlug = searchParams.categoria
-  const tagSlug = searchParams.etiqueta
-  const sortOrder = searchParams.orden || 'recientes'
-  const currentPage = parseInt(searchParams.pagina || '1', 10)
+  // Extraer filtros
+  const categorySlug = filters.categoria
+  const tagSlug = filters.etiqueta
+  const sortOrder = filters.orden || 'recientes'
+  const currentPage = filters.pagina || 1
 
   // Obtener todas las categorías para el filtro
   const { data: categories } = await supabase
@@ -117,18 +113,6 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
   // Encontrar categoría seleccionada para las migas de pan
   const selectedCategory = categories?.find(cat => cat.slug === categorySlug)
 
-  // Construir URL para paginación
-  const buildPaginationUrl = (pageNum: number) => {
-    const params = new URLSearchParams()
-    if (categorySlug) params.set('categoria', categorySlug)
-    if (tagSlug) params.set('etiqueta', tagSlug)
-    if (sortOrder && sortOrder !== 'recientes') params.set('orden', sortOrder)
-    if (pageNum > 1) params.set('pagina', pageNum.toString())
-
-    const queryString = params.toString()
-    return `/mundo-grimmiz${queryString ? `?${queryString}` : ''}`
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -192,6 +176,7 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
               currentCategory={categorySlug}
               currentTag={selectedTag}
               currentSort={sortOrder}
+              currentPage={currentPage}
             />
           </div>
         </section>
@@ -252,7 +237,7 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
                     {/* Botón anterior */}
                     {currentPage > 1 ? (
                       <Link
-                        href={buildPaginationUrl(currentPage - 1)}
+                        href={buildProductListUrl({ ...filters, pagina: currentPage - 1 })}
                         className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors text-grimmiz-text"
                       >
                         ← Anterior
@@ -294,7 +279,7 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
                         ) : (
                           <Link
                             key={pageNum}
-                            href={buildPaginationUrl(pageNum)}
+                            href={buildProductListUrl({ ...filters, pagina: pageNum })}
                             className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors text-grimmiz-text"
                           >
                             {pageNum}
@@ -306,7 +291,7 @@ export default async function MundoGrimmizPage({ searchParams }: MundoGrimmizPag
                     {/* Botón siguiente */}
                     {currentPage < totalPages ? (
                       <Link
-                        href={buildPaginationUrl(currentPage + 1)}
+                        href={buildProductListUrl({ ...filters, pagina: currentPage + 1 })}
                         className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors text-grimmiz-text"
                       >
                         Siguiente →

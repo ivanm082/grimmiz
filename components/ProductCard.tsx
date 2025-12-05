@@ -15,7 +15,7 @@ export default function ProductCard({ id, name, price, image, description, slug 
   const urlSlug = `${productSlug}-${id}`
 
   return (
-    <Link href={`/mundo-grimmiz/${urlSlug}`} className="h-full">
+    <Link href={`/mundo-grimmiz/producto/${urlSlug}`} className="h-full">
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col">
         <div className="relative h-64 bg-gray-200 flex-shrink-0">
           {image ? (

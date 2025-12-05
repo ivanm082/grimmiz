@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { buildProductListUrl } from '@/lib/url-builder'
 
 interface Category {
   id: number
@@ -20,50 +21,42 @@ interface ProductFiltersProps {
   currentCategory?: string
   currentTag?: Tag | null
   currentSort: string
+  currentPage?: number
 }
 
 export default function ProductFilters({
   categories,
   currentCategory,
   currentTag,
-  currentSort
+  currentSort,
+  currentPage = 1
 }: ProductFiltersProps) {
   const router = useRouter()
 
-  // Construir URL para filtros
-  const buildFilterUrl = (newParams: Record<string, string | null | undefined>) => {
-    const params = new URLSearchParams()
-    
-    // Si está en newParams, usar ese valor (null = eliminar)
-    // Si no está en newParams, usar el valor actual
-    const categoria = 'categoria' in newParams ? newParams.categoria : currentCategory
-    const etiqueta = 'etiqueta' in newParams ? newParams.etiqueta : currentTag?.slug
-    const orden = 'orden' in newParams ? newParams.orden : currentSort
-    const pagina = 'pagina' in newParams ? newParams.pagina : '1'
-
-    if (categoria) params.set('categoria', categoria)
-    if (etiqueta) params.set('etiqueta', etiqueta)
-    if (orden && orden !== 'recientes') params.set('orden', orden)
-    if (pagina && pagina !== '1') params.set('pagina', pagina)
-
-    const queryString = params.toString()
-    return `/mundo-grimmiz${queryString ? `?${queryString}` : ''}`
-  }
-
   const handleSortChange = (value: string) => {
-    const url = buildFilterUrl({ orden: value, pagina: '1' })
+    const url = buildProductListUrl({
+      categoria: currentCategory,
+      etiqueta: currentTag?.slug,
+      orden: value,
+      pagina: 1 // Resetear a página 1 al cambiar orden
+    })
     router.push(url)
   }
 
-  const handleRemoveFilter = (filterType: 'categoria' | 'etiqueta' | 'orden') => {
+  const handleRemoveFilter = (filterType: 'categoria' | 'etiqueta') => {
     if (filterType === 'categoria') {
-      const url = buildFilterUrl({ categoria: null, pagina: '1' })
+      const url = buildProductListUrl({
+        etiqueta: currentTag?.slug,
+        orden: currentSort,
+        pagina: 1
+      })
       router.push(url)
     } else if (filterType === 'etiqueta') {
-      const url = buildFilterUrl({ etiqueta: null, pagina: '1' })
-      router.push(url)
-    } else {
-      const url = buildFilterUrl({ orden: 'recientes', pagina: '1' })
+      const url = buildProductListUrl({
+        categoria: currentCategory,
+        orden: currentSort,
+        pagina: 1
+      })
       router.push(url)
     }
   }
@@ -83,7 +76,10 @@ export default function ProductFilters({
             </div>
             <div className="flex flex-wrap gap-2">
               <Link
-                href={buildFilterUrl({ categoria: null, pagina: '1' })}
+                href={buildProductListUrl({
+                  etiqueta: currentTag?.slug,
+                  orden: currentSort
+                })}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   !currentCategory
                     ? 'bg-primary text-white shadow-md'
@@ -94,7 +90,11 @@ export default function ProductFilters({
               </Link>
               {categories.map((category) => {
                 const isActive = currentCategory === category.slug
-                const categoryUrl = buildFilterUrl({ categoria: category.slug, pagina: '1' })
+                const categoryUrl = buildProductListUrl({
+                  categoria: category.slug,
+                  etiqueta: currentTag?.slug,
+                  orden: currentSort
+                })
                 
                 return (
                   <Link

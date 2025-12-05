@@ -7,6 +7,7 @@ import AdoptButton from '@/components/AdoptButton'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { buildProductListUrl } from '@/lib/url-builder'
 
 // Datos estáticos de artículos relacionados (igual que en la home)
 const relatedArticles = [
@@ -54,6 +55,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const productId = slugParts[slugParts.length - 1]
 
   // Validar que el último segmento sea un número
+  // Si no termina en número, no es un producto, dejar que Next.js intente con otras rutas
   if (!productId || isNaN(Number(productId))) {
     notFound()
   }
@@ -80,6 +82,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     .eq('id', productId)
     .single()
 
+  // Si no se encuentra el producto, también retornar notFound
   if (productError || !product) {
     notFound()
   }
@@ -168,7 +171,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <>
                   <span>/</span>
                   <Link 
-                    href={`/mundo-grimmiz?categoria=${product.category.slug}`}
+                    href={buildProductListUrl({ categoria: product.category.slug })}
                     className="hover:text-primary transition-colors"
                   >
                     {product.category.name}
@@ -193,7 +196,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {/* Categoría */}
                 {product.category && (
                   <Link 
-                    href={`/mundo-grimmiz?categoria=${product.category.slug}`}
+                    href={buildProductListUrl({ categoria: product.category.slug })}
                     className="inline-block text-sm font-medium text-primary hover:text-primary-dark transition-colors"
                   >
                     {product.category.name}
@@ -225,7 +228,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     {tags.map((tag: any) => (
                       <Link
                         key={tag.id}
-                        href={`/mundo-grimmiz?etiqueta=${tag.slug}`}
+                        href={buildProductListUrl({ etiqueta: tag.slug })}
                         className="inline-flex items-center px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium hover:bg-primary/20 transition-colors"
                       >
                         <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,7 +280,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               <div className="text-center mt-8">
                 <Link 
-                  href={product.category ? `/mundo-grimmiz?categoria=${product.category.slug}` : '/mundo-grimmiz'}
+                  href={product.category ? buildProductListUrl({ categoria: product.category.slug }) : '/mundo-grimmiz'}
                   className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
                 >
                   Ver todos los productos

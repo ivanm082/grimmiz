@@ -148,7 +148,7 @@ export default function ProductsTable({ products, onDelete, onDuplicate, isLoadi
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div className="flex items-center justify-end gap-2">
                                         <a
-                                            href={`/mundo-grimmiz/${product.slug || product.title.toLowerCase().replace(/\s+/g, '-')}-${product.id}`}
+                                            href={`/mundo-grimmiz/producto/${product.slug || product.title.toLowerCase().replace(/\s+/g, '-')}-${product.id}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-gray-500 hover:text-gray-700 transition-colors p-1"
@@ -239,7 +239,7 @@ export default function ProductsTable({ products, onDelete, onDuplicate, isLoadi
                                 </p>
                                 <div className="flex gap-2">
                                     <a
-                                        href={`/mundo-grimmiz/${product.slug || product.title.toLowerCase().replace(/\s+/g, '-')}-${product.id}`}
+                                        href={`/mundo-grimmiz/producto/${product.slug || product.title.toLowerCase().replace(/\s+/g, '-')}-${product.id}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center"
