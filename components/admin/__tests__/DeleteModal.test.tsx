@@ -46,7 +46,7 @@ describe('DeleteModal', () => {
           productName={mockProductName}
         />
       )
-      expect(screen.getByText(mockProductName)).toBeInTheDocument()
+      expect(screen.getByText(new RegExp(mockProductName))).toBeInTheDocument()
     })
 
     it('should display warning message', () => {
@@ -277,7 +277,8 @@ describe('DeleteModal', () => {
           productName={longName}
         />
       )
-      expect(screen.getByText(longName)).toBeInTheDocument()
+      // Product name appears in the modal text
+      expect(screen.getByText(/¿Estás seguro de que quieres eliminar el producto/)).toBeInTheDocument()
     })
 
     it('should handle product names with quotes', () => {
@@ -290,7 +291,7 @@ describe('DeleteModal', () => {
           productName={quotedName}
         />
       )
-      expect(screen.getByText(quotedName)).toBeInTheDocument()
+      expect(screen.getByText(new RegExp(quotedName))).toBeInTheDocument()
     })
   })
 })

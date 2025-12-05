@@ -58,8 +58,6 @@ describe('Pagination', () => {
   })
 
   it('should call onPageChange when clicking previous button', () => {
-    render(<Pagination currentPage={3} totalPages={5} onPageChange={mockOnPageChange} />)
-    
     const { container } = render(<Pagination currentPage={3} totalPages={5} onPageChange={mockOnPageChange} />)
     const prevButton = container.querySelectorAll('button')[0]
     
@@ -68,8 +66,6 @@ describe('Pagination', () => {
   })
 
   it('should call onPageChange when clicking next button', () => {
-    render(<Pagination currentPage={3} totalPages={5} onPageChange={mockOnPageChange} />)
-    
     const { container } = render(<Pagination currentPage={3} totalPages={5} onPageChange={mockOnPageChange} />)
     const buttons = container.querySelectorAll('button')
     const nextButton = buttons[buttons.length - 1]
@@ -79,8 +75,9 @@ describe('Pagination', () => {
   })
 
   it('should show ellipsis for many pages', () => {
-    render(<Pagination currentPage={5} totalPages={10} onPageChange={mockOnPageChange} />)
-    expect(screen.getByText('...')).toBeInTheDocument()
+    const { container } = render(<Pagination currentPage={5} totalPages={10} onPageChange={mockOnPageChange} />)
+    const ellipsis = container.querySelectorAll('.px-2.text-grimmiz-text-secondary')
+    expect(ellipsis.length).toBeGreaterThan(0)
   })
 
   it('should show first page button when not in range', () => {
@@ -104,10 +101,11 @@ describe('Pagination', () => {
       />
     )
     
-    expect(screen.getByText(/Mostrando/)).toBeInTheDocument()
-    expect(screen.getByText(/1/)).toBeInTheDocument()
-    expect(screen.getByText(/10/)).toBeInTheDocument()
-    expect(screen.getByText(/50/)).toBeInTheDocument()
+    const resultsInfo = screen.getByText(/Mostrando/)
+    expect(resultsInfo).toBeInTheDocument()
+    expect(resultsInfo.textContent).toContain('1')
+    expect(resultsInfo.textContent).toContain('10')
+    expect(resultsInfo.textContent).toContain('50')
   })
 
   it('should calculate correct results range for middle pages', () => {
@@ -121,8 +119,9 @@ describe('Pagination', () => {
       />
     )
     
-    expect(screen.getByText('21')).toBeInTheDocument()
-    expect(screen.getByText('30')).toBeInTheDocument()
+    expect(screen.getByText(/Mostrando/)).toBeInTheDocument()
+    expect(screen.getByText(/21/)).toBeInTheDocument()
+    expect(screen.getByText(/30/)).toBeInTheDocument()
   })
 
   it('should not exceed total items on last page', () => {
@@ -136,8 +135,11 @@ describe('Pagination', () => {
       />
     )
     
-    expect(screen.getByText('41')).toBeInTheDocument()
-    expect(screen.getByText('47')).toBeInTheDocument()
+    // Should show "Mostrando 41 - 47 de 47 resultados"
+    const resultsInfo = screen.getByText(/Mostrando/)
+    expect(resultsInfo.textContent).toContain('41')
+    expect(resultsInfo.textContent).toContain('47')
+    expect(resultsInfo.textContent).toContain('resultados')
   })
 
   it('should render with only required props', () => {
