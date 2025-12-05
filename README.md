@@ -2,6 +2,16 @@
 
 Tienda online para productos de manualidades hechos a mano.
 
+## 🤖 Recuperación Rápida de Contexto (para IA)
+
+Si estás trabajando con un asistente de IA y necesitas que recupere todo el contexto del proyecto rápidamente, compártele este mensaje:
+
+> *"Lee el archivo `CONTEXT.md` de este repositorio para obtener el contexto completo del proyecto. Luego ejecuta `npm test` para verificar que todo funciona correctamente."*
+
+Este archivo contiene toda la información sobre arquitectura, decisiones de diseño, estructura de base de datos, características implementadas, SEO, testing y próximos pasos.
+
+---
+
 ## Tecnologías
 
 - Next.js 14
