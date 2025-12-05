@@ -90,10 +90,10 @@ describe('CategoriesTable', () => {
   })
 
   describe('Actions', () => {
-    it('should have edit button for each category', () => {
+    it('should have edit links for each category', () => {
       const { container } = render(<CategoriesTable categories={mockCategories} />)
-      const editButtons = container.querySelectorAll('[title="Editar"]')
-      expect(editButtons).toHaveLength(2)
+      const editLinks = container.querySelectorAll('a[href="/admin/categories/1"], a[href="/admin/categories/2"]')
+      expect(editLinks.length).toBe(2)
     })
 
     it('should have delete button for each category', () => {
