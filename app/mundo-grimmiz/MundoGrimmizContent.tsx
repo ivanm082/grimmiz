@@ -159,6 +159,8 @@ export default async function MundoGrimmizContent({ filters }: MundoGrimmizConte
           <div className="container mx-auto px-4">
             <h1 className="text-2xl md:text-3xl font-bold text-grimmiz-text mb-2">
               {selectedCategory ? selectedCategory.name : 'Mundo Grimmiz'}
+              {selectedTag && ` #${selectedTag.name}`}
+              {currentPage > 1 && ` - página ${currentPage}`}
             </h1>
             <p className="text-sm md:text-base text-grimmiz-text-secondary">
               {selectedCategory

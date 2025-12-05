@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { buildProductListUrl } from '@/lib/url-builder'
+import { Metadata } from 'next'
 
 // Datos estáticos de artículos relacionados (igual que en la home)
 const relatedArticles = [
@@ -44,6 +45,53 @@ const relatedArticles = [
 interface ProductPageProps {
   params: {
     slug: string
+  }
+}
+
+/**
+ * Genera los metadatos de la página de producto (incluyendo title y canonical)
+ */
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const supabase = createClient()
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const canonicalUrl = `${baseUrl}/mundo-grimmiz/producto/${params.slug}/`
+  
+  // Extraer el ID del slug
+  const slugParts = params.slug.split('-')
+  const productId = slugParts[slugParts.length - 1]
+
+  // Obtener el producto con su categoría y descripción para construir el título y la meta description
+  const { data: product } = await supabase
+    .from('product')
+    .select(`
+      title,
+      description,
+      price,
+      category:category_id (
+        name
+      )
+    `)
+    .eq('id', productId)
+    .single()
+
+  // Construir el título: "{nombre-del-producto} | {categoria} | Grimmiz"
+  let title = 'Producto | Grimmiz' // Fallback por si falla la query
+  let description = 'Producto artesanal hecho a mano con dedicación y cariño en Grimmiz.'
+  
+  if (product) {
+    const categoryName = product.category?.name || 'Productos'
+    title = `${product.title} | ${categoryName} | Grimmiz`
+    
+    // Construir la descripción: "Ver las fotos y detalles de {categoria} {nombre}. Hecho a mano en Grimmiz."
+    description = `Ver las fotos y detalles de ${categoryName} ${product.title}. Hecho a mano en Grimmiz.`
+  }
+  
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
   }
 }
 

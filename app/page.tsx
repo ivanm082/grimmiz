@@ -4,6 +4,21 @@ import ProductCard from '@/components/ProductCard'
 import ArticleCard from '@/components/ArticleCard'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { Metadata } from 'next'
+
+/**
+ * Genera los metadatos de la home page
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  
+  return {
+    description: 'Descubre productos únicos de manualidades hechos a mano con amor y dedicación. Figuras de resina, láminas personalizadas y mucho más en Grimmiz.',
+    alternates: {
+      canonical: `${baseUrl}/`,
+    },
+  }
+}
 
 // Datos estáticos de artículos recientes
 const recentArticles = [
