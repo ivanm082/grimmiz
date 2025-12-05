@@ -262,5 +262,31 @@ describe('OptimizedImage', () => {
       expect(path).toBeInTheDocument()
     })
   })
+
+  describe('default behavior and fallbacks', () => {
+    it('should default to fill when no dimensions specified', () => {
+      const { container } = render(
+        <OptimizedImage src={SUPABASE_URL} alt="Test" />
+      )
+      const img = container.querySelector('img')
+      expect(img).toBeInTheDocument()
+    })
+
+    it('should render with only width (no height)', () => {
+      const { container } = render(
+        <OptimizedImage src={SUPABASE_URL} alt="Test" width={400} />
+      )
+      const img = container.querySelector('img')
+      expect(img).toBeInTheDocument()
+    })
+
+    it('should render with only height (no width)', () => {
+      const { container } = render(
+        <OptimizedImage src={SUPABASE_URL} alt="Test" height={300} />
+      )
+      const img = container.querySelector('img')
+      expect(img).toBeInTheDocument()
+    })
+  })
 })
 
