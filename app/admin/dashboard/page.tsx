@@ -8,6 +8,9 @@ export default function DashboardPage() {
     const [stats, setStats] = useState({
         totalProducts: 0,
         totalCategories: 0,
+        totalArticles: 0,
+        publishedArticles: 0,
+        draftArticles: 0,
         isLoading: true
     })
 
@@ -22,9 +25,23 @@ export default function DashboardPage() {
                 const categoriesResponse = await fetch('/api/admin/categories')
                 const categoriesData = await categoriesResponse.json()
 
+                // Obtener estadísticas de artículos
+                const articlesResponse = await fetch('/api/admin/blog?limit=1')
+                const articlesData = await articlesResponse.json()
+
+                // Obtener artículos publicados y borradores
+                const publishedResponse = await fetch('/api/admin/blog?published=true&limit=1')
+                const publishedData = await publishedResponse.json()
+
+                const draftResponse = await fetch('/api/admin/blog?published=false&limit=1')
+                const draftData = await draftResponse.json()
+
                 setStats({
                     totalProducts: productsData.pagination?.total || 0,
                     totalCategories: categoriesData.categories?.length || 0,
+                    totalArticles: articlesData.totalItems || 0,
+                    publishedArticles: publishedData.totalItems || 0,
+                    draftArticles: draftData.totalItems || 0,
                     isLoading: false
                 })
             } catch (error) {
@@ -46,7 +63,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
                     {/* Total Productos */}
                     <div className="bg-white rounded-lg shadow-sm p-6">
                         <div className="flex items-center justify-between">
@@ -88,6 +105,75 @@ export default function DashboardPage() {
                             <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
                                 <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Total Artículos */}
+                    <div className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-grimmiz-text-secondary mb-1">
+                                    Total Artículos
+                                </p>
+                                {stats.isLoading ? (
+                                    <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+                                ) : (
+                                    <p className="text-3xl font-bold text-grimmiz-text">
+                                        {stats.totalArticles}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                                <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Artículos Publicados */}
+                    <div className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-grimmiz-text-secondary mb-1">
+                                    Publicados
+                                </p>
+                                {stats.isLoading ? (
+                                    <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+                                ) : (
+                                    <p className="text-3xl font-bold text-green-600">
+                                        {stats.publishedArticles}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+                                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Artículos en Borrador */}
+                    <div className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-grimmiz-text-secondary mb-1">
+                                    Borradores
+                                </p>
+                                {stats.isLoading ? (
+                                    <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+                                ) : (
+                                    <p className="text-3xl font-bold text-orange-600">
+                                        {stats.draftArticles}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center">
+                                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                 </svg>
                             </div>
                         </div>

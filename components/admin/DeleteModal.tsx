@@ -4,7 +4,9 @@ interface DeleteModalProps {
     isOpen: boolean
     onClose: () => void
     onConfirm: () => void
-    productName: string
+    entityName?: string
+    productName?: string // Para compatibilidad hacia atrás
+    entityType?: 'producto' | 'artículo'
     isDeleting?: boolean
 }
 
@@ -12,9 +14,13 @@ export default function DeleteModal({
     isOpen,
     onClose,
     onConfirm,
-    productName,
+    entityName,
+    productName, // Para compatibilidad
+    entityType = 'producto',
     isDeleting = false
 }: DeleteModalProps) {
+    // Usar entityName si se proporciona, sino productName para compatibilidad
+    const displayName = entityName || productName || ''
     if (!isOpen) return null
 
     return (
@@ -57,12 +63,12 @@ export default function DeleteModal({
                     {/* Content */}
                     <div className="p-6">
                         <p className="text-grimmiz-text mb-4">
-                            ¿Estás seguro de que quieres eliminar el producto{' '}
-                            <span className="font-semibold">&ldquo;{productName}&rdquo;</span>?
+                            ¿Estás seguro de que quieres eliminar el {entityType}{' '}
+                            <span className="font-semibold">&ldquo;{displayName}&rdquo;</span>?
                         </p>
                         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                             <p className="text-sm text-red-800">
-                                <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer. El producto y todas sus imágenes adicionales serán eliminados permanentemente.
+                                <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer. El {entityType} y todas sus imágenes adicionales serán eliminados permanentemente.
                             </p>
                         </div>
                     </div>

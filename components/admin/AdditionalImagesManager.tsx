@@ -14,6 +14,8 @@ interface AdditionalImage {
 
 interface AdditionalImagesManagerProps {
     productId?: number
+    entityId?: number
+    entityType?: string
     onImagesChange?: (images: AdditionalImage[]) => void
 }
 
@@ -24,7 +26,7 @@ export interface AdditionalImagesManagerRef {
 const MAX_IMAGES = 8
 
 const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, AdditionalImagesManagerProps>(
-    ({ productId, onImagesChange }, ref) => {
+    ({ productId, entityId, entityType, onImagesChange }, ref) => {
         const [images, setImages] = useState<AdditionalImage[]>([])
         const [isLoading, setIsLoading] = useState(false)
         const [isUploading, setIsUploading] = useState(false)
@@ -33,21 +35,27 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
         const [newlyUploadedUrls, setNewlyUploadedUrls] = useState<string[]>([])
         const [newlyCreatedImageIds, setNewlyCreatedImageIds] = useState<number[]>([])
 
+        // Determinar si trabajamos con productos o artículos
+        const isProduct = !!productId
+        const currentEntityId = productId || entityId
+        const apiBasePath = productId ? 'products' : (entityType === 'blog_article' ? 'blog' : 'products')
+
+
         // Cargar imágenes existentes si estamos en modo edición
         useEffect(() => {
-            if (productId) {
+            if (currentEntityId) {
                 loadImages()
             }
-        }, [productId])
+        }, [currentEntityId])
 
         const loadImages = async () => {
-            if (!productId) return
+            if (!currentEntityId) return
 
             setIsLoading(true)
             setError('')
 
             try {
-                const response = await fetch(`/api/admin/products/${productId}/images`)
+                const response = await fetch(`/api/admin/${apiBasePath}/${currentEntityId}/images`)
                 const data = await response.json()
 
                 if (!response.ok) {
@@ -64,8 +72,8 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
         }
 
         const handleImageUpload = async (url: string) => {
-            if (!productId) {
-                setError('Debes guardar el producto antes de añadir imágenes adicionales')
+            if (!currentEntityId) {
+                setError(`Debes guardar el ${isProduct ? 'producto' : 'artículo'} antes de añadir imágenes adicionales`)
                 return
             }
 
@@ -78,7 +86,7 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
             setError('')
 
             try {
-                const response = await fetch(`/api/admin/products/${productId}/images`, {
+                const response = await fetch(`/api/admin/${apiBasePath}/${currentEntityId}/images`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -127,7 +135,7 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
         }
 
         const handleDelete = async (imageId: number, imageUrl: string) => {
-            if (!productId) return
+            if (!currentEntityId) return
 
             if (!confirm('¿Estás seguro de que quieres eliminar esta imagen?')) {
                 return
@@ -136,7 +144,7 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
             setError('')
 
             try {
-                const response = await fetch(`/api/admin/products/${productId}/images/${imageId}`, {
+                const response = await fetch(`/api/admin/${apiBasePath}/${currentEntityId}/images/${imageId}`, {
                     method: 'DELETE',
                 })
 
@@ -197,7 +205,7 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
                     display_order: index + 1
                 }))
 
-                const response = await fetch(`/api/admin/products/${productId}/images`, {
+                const response = await fetch(`/api/admin/${apiBasePath}/${currentEntityId}/images`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -231,12 +239,12 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
 
         // Función para limpiar imágenes recién subidas si se cancela el formulario
         const cleanupNewImages = async () => {
-            if (!productId) return
+            if (!currentEntityId) return
 
             // Eliminar registros de la base de datos
             for (const imageId of newlyCreatedImageIds) {
                 try {
-                    await fetch(`/api/admin/products/${productId}/images/${imageId}`, {
+                    await fetch(`/api/admin/${apiBasePath}/${currentEntityId}/images/${imageId}`, {
                         method: 'DELETE',
                     })
                 } catch (err) {
@@ -254,18 +262,19 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
             cleanupNewImages
         }))
 
-        if (!productId) {
+        if (!currentEntityId) {
             return (
                 <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                     <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <p className="text-grimmiz-text-secondary font-medium">
-                        Guarda el producto primero para poder añadir imágenes adicionales
+                        Guarda el {isProduct ? 'producto' : 'artículo'} primero para poder añadir imágenes adicionales
                     </p>
                 </div>
             )
         }
+
 
         return (
             <div className="space-y-4">
@@ -354,6 +363,7 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
                                     value=""
                                     onChange={handleImageUpload}
                                     label={images.length === 0 ? "Añadir primera imagen" : "Añadir otra imagen"}
+                                    folder={isProduct ? "products" : "articles"}
                                 />
                                 {isUploading && (
                                     <div className="mt-2 flex items-center text-primary">
