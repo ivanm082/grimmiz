@@ -1,7 +1,7 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
-import ArticleCard from '@/components/ArticleCard'
+import BlogArticleCard from '@/components/BlogArticleCard'
 import ProductImageGallery from '@/components/ProductImageGallery'
 import AdoptButton from '@/components/AdoptButton'
 import Link from 'next/link'
@@ -9,38 +9,6 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { buildProductListUrl } from '@/lib/url-builder'
 import { Metadata } from 'next'
-
-// Datos estáticos de artículos relacionados (igual que en la home)
-const relatedArticles = [
-  {
-    id: '1',
-    title: 'Cómo empezar en el mundo de las manualidades',
-    excerpt: 'Descubre los primeros pasos para adentrarte en el fascinante mundo de las manualidades y crear tus propias obras de arte.',
-    date: '15 de marzo, 2024',
-    image: '/article1.jpg'
-  },
-  {
-    id: '2',
-    title: 'Técnicas básicas de costura para principiantes',
-    excerpt: 'Aprende las técnicas fundamentales de costura que todo principiante debe conocer para crear proyectos increíbles.',
-    date: '10 de marzo, 2024',
-    image: '/article2.jpg'
-  },
-  {
-    id: '3',
-    title: 'Ideas creativas para decorar tu espacio',
-    excerpt: 'Inspírate con estas ideas creativas para transformar cualquier espacio en un lugar único y acogedor.',
-    date: '5 de marzo, 2024',
-    image: '/article3.jpg'
-  },
-  {
-    id: '4',
-    title: 'Materiales esenciales para manualidades',
-    excerpt: 'Conoce los materiales básicos que no pueden faltar en tu taller de manualidades para crear proyectos profesionales.',
-    date: '1 de marzo, 2024',
-    image: '/article4.jpg'
-  }
-]
 
 interface ProductPageProps {
   params: {
@@ -199,6 +167,72 @@ export default async function ProductPage({ params }: ProductPageProps) {
     slug: p.slug || p.title?.toLowerCase().replace(/\s+/g, '-') || `producto-${p.id}`
   })) || []
 
+  // Obtener artículos relacionados del blog basados en categoría y etiquetas
+  const tagIds = tags.map(t => t.id)
+  
+  // Obtener todos los artículos publicados con su categoría y etiquetas
+  const { data: allArticles } = await supabase
+    .from('blog_article')
+    .select(`
+      id,
+      title,
+      slug,
+      excerpt,
+      main_image_url,
+      created_at,
+      updated_at,
+      category_id,
+      category:category_id(id, name, slug)
+    `)
+    .eq('published', true)
+
+  // Obtener las etiquetas de cada artículo
+  const { data: articleTagsData } = await supabase
+    .from('blog_article_tag')
+    .select('blog_article_id, tag_id')
+
+  // Crear un mapa de artículo_id -> tag_ids
+  const articleTagsMap = new Map<number, number[]>()
+  articleTagsData?.forEach(at => {
+    if (!articleTagsMap.has(at.blog_article_id)) {
+      articleTagsMap.set(at.blog_article_id, [])
+    }
+    articleTagsMap.get(at.blog_article_id)?.push(at.tag_id)
+  })
+
+  // Calcular relevancia de cada artículo
+  const articlesWithRelevance = allArticles?.map(article => {
+    let relevanceScore = 0
+
+    // +10 puntos si coincide la categoría
+    if (article.category_id === product.category_id) {
+      relevanceScore += 10
+    }
+
+    // +1 punto por cada etiqueta coincidente
+    const articleTags = articleTagsMap.get(article.id) || []
+    const matchingTags = articleTags.filter(tagId => tagIds.includes(tagId))
+    relevanceScore += matchingTags.length
+
+    return {
+      ...article,
+      relevanceScore
+    }
+  }) || []
+
+  // Filtrar artículos con relevancia > 0 y ordenar por relevancia y fecha
+  const relatedArticles = articlesWithRelevance
+    .filter(article => article.relevanceScore > 0)
+    .sort((a, b) => {
+      // Primero por relevancia (descendente)
+      if (b.relevanceScore !== a.relevanceScore) {
+        return b.relevanceScore - a.relevanceScore
+      }
+      // En caso de empate, por fecha de modificación (descendente)
+      return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    })
+    .slice(0, 4)
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -339,33 +373,35 @@ export default async function ProductPage({ params }: ProductPageProps) {
         )}
 
         {/* Artículos Relacionados */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-grimmiz-text mb-4">
-                Inspírate con el Diario Grimmiz
-              </h2>
-              <p className="text-grimmiz-text-secondary text-lg">
-                Artículos que te pueden interesar
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedArticles.map((article) => (
-                <ArticleCard key={article.id} {...article} />
-              ))}
-            </div>
+        {relatedArticles.length > 0 && (
+          <section className="py-16 bg-white">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-grimmiz-text mb-4">
+                  Inspírate con el Diario Grimmiz
+                </h2>
+                <p className="text-grimmiz-text-secondary text-lg">
+                  Artículos que te pueden interesar
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {relatedArticles.map((article) => (
+                  <BlogArticleCard key={article.id} article={article} />
+                ))}
+              </div>
 
-            <div className="text-center mt-8">
-              <Link 
-                href="/diario-grimmiz"
-                className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
-              >
-                Ver Todos los Artículos
-              </Link>
+              <div className="text-center mt-8">
+                <Link 
+                  href="/diario-grimmiz/"
+                  className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+                >
+                  Ver Todos los Artículos
+                </Link>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer />

@@ -1,7 +1,7 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
-import ArticleCard from '@/components/ArticleCard'
+import BlogArticleCard from '@/components/BlogArticleCard'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Metadata } from 'next'
@@ -20,46 +20,14 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-// Datos estáticos de artículos recientes
-const recentArticles = [
-  {
-    id: '1',
-    title: 'Cómo empezar en el mundo de las manualidades',
-    excerpt: 'Descubre los primeros pasos para adentrarte en el fascinante mundo de las manualidades y crear tus propias obras de arte.',
-    date: '15 de marzo, 2024',
-    image: '/article1.jpg'
-  },
-  {
-    id: '2',
-    title: 'Técnicas básicas de costura para principiantes',
-    excerpt: 'Aprende las técnicas fundamentales de costura que todo principiante debe conocer para crear proyectos increíbles.',
-    date: '10 de marzo, 2024',
-    image: '/article2.jpg'
-  },
-  {
-    id: '3',
-    title: 'Ideas creativas para decorar tu espacio',
-    excerpt: 'Inspírate con estas ideas creativas para transformar cualquier espacio en un lugar único y acogedor.',
-    date: '5 de marzo, 2024',
-    image: '/article3.jpg'
-  },
-  {
-    id: '4',
-    title: 'Materiales esenciales para manualidades',
-    excerpt: 'Conoce los materiales básicos que no pueden faltar en tu taller de manualidades para crear proyectos profesionales.',
-    date: '1 de marzo, 2024',
-    image: '/article4.jpg'
-  }
-]
-
 export default async function Home() {
+  const supabase = createClient()
+
   // Obtener productos destacados de Supabase
   let featuredProducts: any[] = []
   let productsError = null
 
   try {
-    const supabase = createClient()
-    
     // Intentar con order, si falla intentar sin order
     let query = supabase
       .from('product')
@@ -95,6 +63,35 @@ export default async function Home() {
     }
   } catch (err: any) {
     productsError = { message: err.message || 'Error desconocido al cargar productos' }
+  }
+
+  // Obtener artículos recientes del blog
+  let recentArticles: any[] = []
+  let articlesError = null
+
+  try {
+    const { data, error } = await supabase
+      .from('blog_article')
+      .select(`
+        id,
+        title,
+        slug,
+        excerpt,
+        main_image_url,
+        created_at,
+        category:category_id(id, name, slug)
+      `)
+      .eq('published', true)
+      .order('updated_at', { ascending: false })
+      .limit(4)
+
+    if (error) {
+      articlesError = error
+    } else if (data) {
+      recentArticles = data
+    }
+  } catch (err: any) {
+    articlesError = { message: err.message || 'Error desconocido al cargar artículos' }
   }
 
   return (
@@ -281,20 +278,36 @@ export default async function Home() {
               <p className="text-grimmiz-text-secondary text-lg">Inspírate con nuestros últimos contenidos</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {recentArticles.map((article) => (
-                <ArticleCard key={article.id} {...article} />
-              ))}
-            </div>
+            {articlesError && (
+              <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-8 text-center">
+                <p>No se pudieron cargar los artículos del blog.</p>
+              </div>
+            )}
 
-            <div className="text-center">
-              <Link 
-                href="/diario-grimmiz"
-                className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
-              >
-                Ver Todos los Artículos
-              </Link>
-            </div>
+            {!articlesError && recentArticles.length > 0 && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  {recentArticles.map((article) => (
+                    <BlogArticleCard key={article.id} article={article} />
+                  ))}
+                </div>
+
+                <div className="text-center">
+                  <Link 
+                    href="/diario-grimmiz/"
+                    className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+                  >
+                    Ver Todos los Artículos
+                  </Link>
+                </div>
+              </>
+            )}
+
+            {!articlesError && recentArticles.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No hay artículos disponibles en este momento.</p>
+              </div>
+            )}
           </div>
         </section>
 
