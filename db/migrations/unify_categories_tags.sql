@@ -7,6 +7,23 @@
 -- Si es una instalación nueva, ejecuta directamente los esquemas actualizados
 
 -- ============================================
+-- PASO 0: Añadir constraint UNIQUE en category.slug si no existe
+-- ============================================
+
+-- Verificar y añadir UNIQUE constraint en category.slug
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint 
+        WHERE conname = 'category_slug_unique' 
+        AND conrelid = 'category'::regclass
+    ) THEN
+        ALTER TABLE category ADD CONSTRAINT category_slug_unique UNIQUE (slug);
+        RAISE NOTICE 'Constraint UNIQUE añadida en category.slug';
+    END IF;
+END $$;
+
+-- ============================================
 -- PASO 1: Migrar datos de blog_category a category
 -- ============================================
 
