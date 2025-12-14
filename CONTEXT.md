@@ -1,12 +1,17 @@
-# Contexto Completo del Proyecto Grimmiz - 5 Diciembre 2025
+# Contexto Completo del Proyecto Grimmiz - 14 Diciembre 2025
 
 ## 📋 Información General del Proyecto
 
-**Nombre**: Grimmiz  
-**Tipo**: E-commerce de productos artesanales hechos a mano  
+**Nombre**: Grimmiz - Portal de Artesanía Digital  
+**Tipo**: E-commerce de productos artesanales + Blog educativo  
 **Tech Stack**: Next.js 14 (App Router), TypeScript, Tailwind CSS, Supabase  
 **Repositorio**: git@github.com:ivanm082/grimmiz.git  
 **Branch principal**: main
+
+**Secciones principales**:
+- 🛍️ **Mundo Grimmiz**: Catálogo de productos artesanales
+- 📝 **Diario Grimmiz**: Blog educativo sobre técnicas de manualidades
+- ⚙️ **Panel Admin**: Gestión completa de productos, artículos y contenido
 
 ## 🏗️ Arquitectura y Estructura
 
@@ -25,14 +30,20 @@
 grimmiz/
 ├── app/                          # App Router de Next.js
 │   ├── admin/                    # Panel de administración
+│   │   ├── blog/               # CRUD de artículos del blog
 │   │   ├── categories/          # CRUD de categorías
 │   │   ├── dashboard/           # Dashboard principal
 │   │   ├── login/               # Login de admin
 │   │   └── products/            # CRUD de productos
 │   ├── api/                     # API Routes
 │   │   ├── admin/              # Endpoints admin
+│   │   │   ├── blog/           # APIs del blog
 │   │   └── contact/            # Formulario de contacto
 │   ├── contacto/               # Página de contacto
+│   ├── diario-grimmiz/         # Blog público "Diario Grimmiz"
+│   │   ├── [[...filters]]/    # Listado de artículos con filtros
+│   │   ├── articulo/[slug]/   # Detalle de artículo
+│   │   └── DiarioGrimmizContent.tsx
 │   ├── mundo-grimmiz/          # Listado y detalle de productos
 │   │   ├── [[...filters]]/    # Catch-all para filtros SEO
 │   │   └── producto/[slug]/   # Detalle de producto
@@ -44,6 +55,8 @@ grimmiz/
 │   │   ├── __tests__/         # Tests de componentes admin
 │   │   ├── AdditionalImagesManager.tsx
 │   │   ├── AdminLayout.tsx
+│   │   ├── ArticleForm.tsx    # Formulario de artículos del blog
+│   │   ├── ArticlesTable.tsx  # Tabla de artículos del blog
 │   │   ├── CategoriesTable.tsx
 │   │   ├── CategoryForm.tsx
 │   │   ├── DeleteModal.tsx
@@ -56,6 +69,8 @@ grimmiz/
 │   ├── __tests__/              # Tests de componentes públicos
 │   ├── AdoptButton.tsx
 │   ├── ArticleCard.tsx
+│   ├── BlogArticleCard.tsx     # Tarjeta de artículo del blog
+│   ├── BlogFilters.tsx         # Filtros del blog
 │   ├── ContactModal.tsx
 │   ├── Footer.tsx
 │   ├── Header.tsx
@@ -133,9 +148,39 @@ grimmiz/
    - `display_order` (int)
    - `created_at` (timestamp)
 
+6. **blog_article** (Sistema de Blog)
+   - `id` (int, PK)
+   - `title` (text)
+   - `excerpt` (text)
+   - `content` (text) - Markdown
+   - `category_id` (int, FK -> category)
+   - `main_image_url` (text, nullable)
+   - `slug` (text, unique)
+   - `published` (boolean)
+   - `created_at` (timestamp)
+   - `updated_at` (timestamp)
+
+7. **blog_article_tag** (Relación N:N artículos-etiquetas)
+   - `blog_article_id` (int, FK -> blog_article)
+   - `tag_id` (int, FK -> tag)
+   - PK compuesta (blog_article_id, tag_id)
+
+8. **blog_article_image** (Imágenes adicionales de artículos)
+   - `id` (int, PK)
+   - `blog_article_id` (int, FK -> blog_article)
+   - `image_url` (text)
+   - `alt_text` (text, nullable)
+   - `caption` (text, nullable)
+   - `display_order` (int)
+   - `created_at` (timestamp)
+   - `updated_at` (timestamp)
+
 ### Storage Buckets
-- **grimmiz-images**: Almacena todas las imágenes de productos y categorías
-  - Estructura: `products/`, `categories/`
+- **grimmiz-images**: Almacena todas las imágenes de productos, categorías y blog
+  - Estructura:
+    - `products/` - Imágenes de productos (principal + adicionales)
+    - `categories/` - Imágenes de categorías
+    - `articles/` - Imágenes de artículos del blog (principal + adicionales)
   - Optimización automática con transformaciones de Supabase
 
 ## 🔐 Autenticación y Seguridad
@@ -196,6 +241,35 @@ grimmiz/
    - Pre-rellena el producto de interés
    - Validación y envío
 
+6. **Diario Grimmiz - Blog** (`/diario-grimmiz/`)
+   - **URLs SEO-Friendly**:
+     - Base: `/diario-grimmiz/`
+     - Por categoría: `/diario-grimmiz/{categoria-slug}/`
+     - Con etiqueta: `/diario-grimmiz/{categoria-slug}/etiqueta-{etiqueta-slug}/`
+     - Con paginación: `/diario-grimmiz/{categoria-slug}/pagina-{numero}/`
+     - Con ordenación: `/diario-grimmiz/{categoria-slug}/orden-{tipo}/`
+     - Ejemplo: `/diario-grimmiz/tutoriales/etiqueta-resina/pagina-2/orden-recientes/`
+   - **Filtros**:
+     - Por categoría (compartidas con productos)
+     - Por etiqueta (compartidas con productos)
+     - Ordenación: recientes (por fecha de modificación), antiguos, título A-Z, título Z-A
+     - Paginación (12 artículos por página)
+   - **Características**:
+     - Editor Markdown completo para contenido
+     - Imagen principal (opcional)
+     - Galería de imágenes adicionales
+     - Estado: borrador/publicado
+     - Categorías y etiquetas compartidas
+
+7. **Detalle de Artículo** (`/diario-grimmiz/articulo/{slug}/`)
+   - Renderizado de Markdown a HTML
+   - Galería de imágenes (principal + adicionales)
+   - Información del artículo (título, extracto, contenido, fecha)
+   - Categoría y etiquetas enlazadas
+   - Breadcrumb de navegación
+   - Artículos relacionados (por categoría/etiquetas)
+   - Productos relacionados (por categoría/etiquetas)
+
 ### Panel de Administración (`/admin/*`)
 
 1. **Login** (`/admin/login`)
@@ -204,8 +278,8 @@ grimmiz/
 
 2. **Dashboard** (`/admin/dashboard`)
    - Estadísticas del negocio
-   - Resumen de productos y categorías
-   - Productos recientes
+   - Resumen de productos, categorías y artículos
+   - Productos y artículos recientes
 
 3. **Gestión de Productos** (`/admin/products`)
    - Listado con búsqueda y filtros
@@ -217,10 +291,21 @@ grimmiz/
    - Duplicar producto
    - Vista previa en web
 
-4. **Gestión de Categorías** (`/admin/categories`)
+4. **Gestión de Artículos** (`/admin/blog`)
+   - Listado con búsqueda y filtros
+   - Paginación
+   - Crear/Editar/Eliminar artículos
+   - Editor Markdown para contenido
+   - Gestión de imágenes (principal + adicionales)
+   - Gestión de etiquetas (compartidas con productos)
+   - Estado: borrador/publicado
+   - Vista previa en web
+
+5. **Gestión de Categorías** (`/admin/categories`)
    - Listado de categorías
    - Crear/Editar/Eliminar categorías
    - Gestión de imagen de categoría
+   - Compartidas entre productos y artículos
 
 ## 🔍 SEO Implementado
 
@@ -240,6 +325,8 @@ grimmiz/
    - Home: "Grimmiz"
    - Mundo Grimmiz: "{Categoría} #{Etiqueta} - página {N} de {Total} | Grimmiz"
    - Producto: "{Nombre del Producto} | {Categoría} | Grimmiz"
+   - Diario Grimmiz: "{Categoría} #{Etiqueta} - página {N} de {Total} | Grimmiz"
+   - Artículo: "{Título del Artículo} | Grimmiz"
    - Contacto: "Contacto | Grimmiz"
    - Páginas con ordenación: Mismo título que sin ordenación
 
@@ -247,6 +334,8 @@ grimmiz/
    - Home: Descripción general del negocio
    - Mundo Grimmiz: Incluye categoría, etiqueta, paginación y ordenación
    - Producto: "Ver las fotos y detalles de {categoria} {nombre}. Hecho a mano en Grimmiz."
+   - Diario Grimmiz: Incluye categoría, etiqueta, paginación y ordenación
+   - Artículo: Extracto del artículo (primeros 160 caracteres)
    - Contacto: Descripción del formulario de contacto
 
 5. **URLs SEO-Friendly**
@@ -419,6 +508,13 @@ git pull              # Descargar cambios desde origin/main
 - Tests de componentes enfocados en funcionalidad, no en implementación
 - Mocks simples para dependencias externas (Supabase, Next.js)
 
+### 6. Sistema de Blog Integrado
+- **Contenido compartido**: Categorías y etiquetas entre productos y artículos
+- **Gestión unificada**: Mismas interfaces y flujos para productos y artículos
+- **URLs consistentes**: Patrón SEO idéntico en todo el portal
+- **Almacenamiento organizado**: Carpetas separadas por tipo de contenido
+- **Limpieza automática**: Eliminación completa de imágenes al borrar contenido
+
 ## 🔄 Flujo de Trabajo Git
 
 1. **Branch principal**: `main`
@@ -435,12 +531,16 @@ git pull              # Descargar cambios desde origin/main
 
 ## 🎯 Próximos Pasos Sugeridos
 
-1. **Aumentar cobertura de tests** en componentes complejos (ProductForm, AdminLayout)
+1. **Aumentar cobertura de tests** en componentes complejos (ArticleForm, AdminLayout)
 2. **Optimizar rendimiento**: Lazy loading, code splitting
 3. **Añadir más features SEO**: Sitemap XML, robots.txt
 4. **Implementar analytics**: Google Analytics o similar
 5. **Mejorar accesibilidad**: ARIA labels, navegación por teclado
 6. **Añadir más tests E2E**: Playwright o Cypress
+7. **Sistema de comentarios** en artículos del blog
+8. **Newsletter/Email marketing** integrado
+9. **Búsqueda avanzada** con filtros de fecha
+10. **Exportación de datos** para análisis
 
 ## 👤 Información del Desarrollador
 
@@ -450,7 +550,7 @@ git pull              # Descargar cambios desde origin/main
 
 ---
 
-**Última actualización**: 5 de diciembre de 2025  
-**Versión del contexto**: 2.0 (completa con SEO y Testing)
+**Última actualización**: 14 de diciembre de 2025
+**Versión del contexto**: 3.0 (completa con Blog y Gestión de Imágenes)
 
 
