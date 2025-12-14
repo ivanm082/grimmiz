@@ -1,22 +1,27 @@
 -- Script de Datos de Prueba para el Blog - Diario Grimmiz
--- Este script inserta categorías, etiquetas y artículos de ejemplo
+-- Este script inserta artículos de ejemplo usando categorías y etiquetas compartidas con productos
+
+-- IMPORTANTE: Las categorías y etiquetas ahora son compartidas entre productos y artículos del blog
+-- Asegúrate de tener creadas las tablas: category, tag, blog_article, blog_article_tag, blog_article_image
 
 -- ============================================
--- 1. CATEGORÍAS DEL BLOG
+-- 1. CREAR CATEGORÍAS (si no existen)
 -- ============================================
 
-INSERT INTO blog_category (name, slug, description) VALUES
-('Tutoriales', 'tutoriales', 'Aprende paso a paso cómo crear tus propias manualidades'),
-('Inspiración', 'inspiracion', 'Ideas y proyectos creativos para inspirarte'),
-('Técnicas', 'tecnicas', 'Descubre técnicas y métodos para mejorar tus creaciones'),
-('Materiales', 'materiales', 'Todo sobre materiales y herramientas para manualidades'),
-('Eventos', 'eventos', 'Noticias y eventos del mundo Grimmiz');
+-- Insertar categorías para el blog (se comparten con productos)
+INSERT INTO category (name, slug) VALUES
+('Tutoriales', 'tutoriales'),
+('Inspiración', 'inspiracion'),
+('Técnicas', 'tecnicas'),
+('Materiales', 'materiales')
+ON CONFLICT (slug) DO NOTHING;
 
 -- ============================================
--- 2. ETIQUETAS DEL BLOG
+-- 2. CREAR ETIQUETAS (si no existen)
 -- ============================================
 
-INSERT INTO blog_tag (name, slug) VALUES
+-- Insertar etiquetas para el blog (se comparten con productos)
+INSERT INTO tag (name, slug) VALUES
 ('Resina', 'resina'),
 ('Principiantes', 'principiantes'),
 ('Avanzado', 'avanzado'),
@@ -28,7 +33,8 @@ INSERT INTO blog_tag (name, slug) VALUES
 ('Moldes', 'moldes'),
 ('Pintura', 'pintura'),
 ('Láminas', 'laminas'),
-('Personalización', 'personalizacion');
+('Personalización', 'personalizacion')
+ON CONFLICT (slug) DO NOTHING;
 
 -- ============================================
 -- 3. ARTÍCULOS DEL BLOG
@@ -41,7 +47,7 @@ INSERT INTO blog_article (
     excerpt, 
     content, 
     main_image_url,
-    blog_category_id,
+    category_id,
     published
 ) VALUES (
     'Cómo empezar con resina epoxi: Guía para principiantes',
@@ -89,9 +95,10 @@ Deja secar según las indicaciones del fabricante, generalmente 24-48 horas.
 
 ¡Ya estás listo para crear tus primeras piezas de resina!',
     'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800',
-    (SELECT id FROM blog_category WHERE slug = 'tutoriales'),
+    (SELECT id FROM category WHERE slug = 'tutoriales'),
     true
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Artículo 2: Ideas creativas para decorar
 INSERT INTO blog_article (
@@ -100,7 +107,7 @@ INSERT INTO blog_article (
     excerpt, 
     content, 
     main_image_url,
-    blog_category_id,
+    category_id,
     published
 ) VALUES (
     '10 ideas creativas para decorar tu hogar con manualidades',
@@ -152,9 +159,10 @@ Crea letras en 3D con cartón y decóralas según tu estilo.
 
 ¡Empieza hoy mismo y transforma tu hogar!',
     'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800',
-    (SELECT id FROM blog_category WHERE slug = 'inspiracion'),
+    (SELECT id FROM category WHERE slug = 'inspiracion'),
     true
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Artículo 3: Técnicas de pintura
 INSERT INTO blog_article (
@@ -163,7 +171,7 @@ INSERT INTO blog_article (
     excerpt, 
     content, 
     main_image_url,
-    blog_category_id,
+    category_id,
     published
 ) VALUES (
     'Técnicas de pintura para figuras de resina: Acabados profesionales',
@@ -212,9 +220,10 @@ Protege tu trabajo con un barniz apropiado (mate, satinado o brillante según pr
 
 ¡Practica y verás cómo mejoran tus resultados!',
     'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800',
-    (SELECT id FROM blog_category WHERE slug = 'tecnicas'),
+    (SELECT id FROM category WHERE slug = 'tecnicas'),
     true
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Artículo 4: Materiales esenciales
 INSERT INTO blog_article (
@@ -223,7 +232,7 @@ INSERT INTO blog_article (
     excerpt, 
     content, 
     main_image_url,
-    blog_category_id,
+    category_id,
     published
 ) VALUES (
     'Materiales esenciales para tu taller de manualidades',
@@ -285,9 +294,10 @@ Una buena lámpara de trabajo es esencial para los detalles finos.
 
 ¡Comienza poco a poco y ve ampliando según tus necesidades!',
     'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=800',
-    (SELECT id FROM blog_category WHERE slug = 'materiales'),
+    (SELECT id FROM category WHERE slug = 'materiales'),
     true
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Artículo 5: Regalos personalizados
 INSERT INTO blog_article (
@@ -296,7 +306,7 @@ INSERT INTO blog_article (
     excerpt, 
     content, 
     main_image_url,
-    blog_category_id,
+    category_id,
     published
 ) VALUES (
     'Ideas de regalos personalizados hechos a mano',
@@ -350,9 +360,10 @@ Crea un calendario con fotos y diseños especiales.
 
 ¡El mejor regalo es el que se hace con el corazón!',
     'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=800',
-    (SELECT id FROM blog_category WHERE slug = 'inspiracion'),
+    (SELECT id FROM category WHERE slug = 'inspiracion'),
     true
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Artículo 6: Reciclaje creativo
 INSERT INTO blog_article (
@@ -361,7 +372,7 @@ INSERT INTO blog_article (
     excerpt, 
     content, 
     main_image_url,
-    blog_category_id,
+    category_id,
     published
 ) VALUES (
     'Reciclaje creativo: Dale nueva vida a objetos cotidianos',
@@ -423,91 +434,101 @@ Ideales para jardines verticales.
 
 ¡Antes de tirar algo, piensa en cómo podrías transformarlo!',
     'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=800',
-    (SELECT id FROM blog_category WHERE slug = 'tutoriales'),
+    (SELECT id FROM category WHERE slug = 'tutoriales'),
     true
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- ============================================
 -- 4. RELACIONES ARTÍCULO-ETIQUETAS
 -- ============================================
 
 -- Artículo 1: Resina para principiantes
-INSERT INTO blog_article_tag (blog_article_id, blog_tag_id)
+INSERT INTO blog_article_tag (blog_article_id, tag_id)
 SELECT 
     (SELECT id FROM blog_article WHERE slug = 'como-empezar-resina-epoxi-principiantes'),
     id
-FROM blog_tag
-WHERE slug IN ('resina', 'principiantes', 'diy', 'moldes');
+FROM tag
+WHERE slug IN ('resina', 'principiantes', 'diy', 'moldes')
+ON CONFLICT DO NOTHING;
 
 -- Artículo 2: Decoración del hogar
-INSERT INTO blog_article_tag (blog_article_id, blog_tag_id)
+INSERT INTO blog_article_tag (blog_article_id, tag_id)
 SELECT 
     (SELECT id FROM blog_article WHERE slug = '10-ideas-creativas-decorar-hogar-manualidades'),
     id
-FROM blog_tag
-WHERE slug IN ('diy', 'decoracion', 'principiantes');
+FROM tag
+WHERE slug IN ('diy', 'decoracion', 'principiantes')
+ON CONFLICT DO NOTHING;
 
 -- Artículo 3: Pintura de figuras
-INSERT INTO blog_article_tag (blog_article_id, blog_tag_id)
+INSERT INTO blog_article_tag (blog_article_id, tag_id)
 SELECT 
     (SELECT id FROM blog_article WHERE slug = 'tecnicas-pintura-figuras-resina-acabados-profesionales'),
     id
-FROM blog_tag
-WHERE slug IN ('resina', 'figuras', 'pintura', 'avanzado');
+FROM tag
+WHERE slug IN ('resina', 'figuras', 'pintura', 'avanzado')
+ON CONFLICT DO NOTHING;
 
 -- Artículo 4: Materiales esenciales
-INSERT INTO blog_article_tag (blog_article_id, blog_tag_id)
+INSERT INTO blog_article_tag (blog_article_id, tag_id)
 SELECT 
     (SELECT id FROM blog_article WHERE slug = 'materiales-esenciales-taller-manualidades'),
     id
-FROM blog_tag
-WHERE slug IN ('principiantes', 'diy');
+FROM tag
+WHERE slug IN ('principiantes', 'diy')
+ON CONFLICT DO NOTHING;
 
 -- Artículo 5: Regalos personalizados
-INSERT INTO blog_article_tag (blog_article_id, blog_tag_id)
+INSERT INTO blog_article_tag (blog_article_id, tag_id)
 SELECT 
     (SELECT id FROM blog_article WHERE slug = 'ideas-regalos-personalizados-hechos-mano'),
     id
-FROM blog_tag
-WHERE slug IN ('regalos', 'personalizacion', 'diy', 'resina');
+FROM tag
+WHERE slug IN ('regalos', 'personalizacion', 'diy', 'resina')
+ON CONFLICT DO NOTHING;
 
 -- Artículo 6: Reciclaje creativo
-INSERT INTO blog_article_tag (blog_article_id, blog_tag_id)
+INSERT INTO blog_article_tag (blog_article_id, tag_id)
 SELECT 
     (SELECT id FROM blog_article WHERE slug = 'reciclaje-creativo-nueva-vida-objetos-cotidianos'),
     id
-FROM blog_tag
-WHERE slug IN ('reciclaje', 'diy', 'decoracion', 'principiantes');
+FROM tag
+WHERE slug IN ('reciclaje', 'diy', 'decoracion', 'principiantes')
+ON CONFLICT DO NOTHING;
 
 -- ============================================
 -- VERIFICACIÓN
 -- ============================================
 
--- Ver categorías creadas
-SELECT * FROM blog_category ORDER BY name;
+-- Ver categorías compartidas
+SELECT 'Categorías compartidas:' as info;
+SELECT * FROM category ORDER BY name;
 
--- Ver etiquetas creadas
-SELECT * FROM blog_tag ORDER BY name;
+-- Ver etiquetas compartidas
+SELECT 'Etiquetas compartidas:' as info;
+SELECT * FROM tag ORDER BY name;
 
 -- Ver artículos con sus categorías
+SELECT 'Artículos con categorías:' as info;
 SELECT 
     ba.id,
     ba.title,
     ba.slug,
-    bc.name as category,
+    c.name as category,
     ba.created_at,
     ba.published
 FROM blog_article ba
-JOIN blog_category bc ON ba.blog_category_id = bc.id
+JOIN category c ON ba.category_id = c.id
 ORDER BY ba.created_at DESC;
 
 -- Ver artículos con sus etiquetas
+SELECT 'Artículos con etiquetas:' as info;
 SELECT 
     ba.title,
-    STRING_AGG(bt.name, ', ') as tags
+    STRING_AGG(t.name, ', ') as tags
 FROM blog_article ba
 LEFT JOIN blog_article_tag bat ON ba.id = bat.blog_article_id
-LEFT JOIN blog_tag bt ON bat.blog_tag_id = bt.id
+LEFT JOIN tag t ON bat.tag_id = t.id
 GROUP BY ba.title
 ORDER BY ba.title;
-

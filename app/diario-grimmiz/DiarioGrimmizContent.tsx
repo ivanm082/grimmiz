@@ -23,7 +23,7 @@ export default async function DiarioGrimmizContent({ filters }: DiarioGrimmizCon
 
   // Obtener todas las categorías para el filtro
   const { data: categories } = await supabase
-    .from('blog_category')
+    .from('category')
     .select('*')
     .order('name', { ascending: true })
 
@@ -34,7 +34,7 @@ export default async function DiarioGrimmizContent({ filters }: DiarioGrimmizCon
   if (tagSlug) {
     // Obtener la etiqueta por slug
     const { data: tag } = await supabase
-      .from('blog_tag')
+      .from('tag')
       .select('*')
       .eq('slug', tagSlug)
       .single()
@@ -46,7 +46,7 @@ export default async function DiarioGrimmizContent({ filters }: DiarioGrimmizCon
       const { data: articleTags } = await supabase
         .from('blog_article_tag')
         .select('blog_article_id')
-        .eq('blog_tag_id', tag.id)
+        .eq('tag_id', tag.id)
 
       articleIdsWithTag = articleTags?.map(at => at.blog_article_id) || []
     }
@@ -55,14 +55,14 @@ export default async function DiarioGrimmizContent({ filters }: DiarioGrimmizCon
   // Construir query de artículos
   let query = supabase
     .from('blog_article')
-    .select('id, title, excerpt, main_image_url, slug, blog_category_id, created_at, updated_at, blog_category:blog_category_id(id, name, slug)', { count: 'exact' })
+    .select('id, title, excerpt, main_image_url, slug, category_id, created_at, updated_at, category:category_id(id, name, slug)', { count: 'exact' })
     .eq('published', true)
 
   // Filtrar por categoría si se especifica
   if (categorySlug) {
     const selectedCategory = categories?.find(cat => cat.slug === categorySlug)
     if (selectedCategory) {
-      query = query.eq('blog_category_id', selectedCategory.id)
+      query = query.eq('category_id', selectedCategory.id)
     }
   }
 

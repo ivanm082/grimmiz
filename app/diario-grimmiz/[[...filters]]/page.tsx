@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: FilterPageProps): Promise<Met
   // Obtener categoría si existe
   if (categorySlug) {
     const { data: category } = await supabase
-      .from('blog_category')
+      .from('category')
       .select('name')
       .eq('slug', categorySlug)
       .single()
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: FilterPageProps): Promise<Met
   // Obtener etiqueta si existe
   if (tagSlug) {
     const { data: tag } = await supabase
-      .from('blog_tag')
+      .from('tag')
       .select('name')
       .eq('slug', tagSlug)
       .single()
@@ -74,20 +74,20 @@ export async function generateMetadata({ params }: FilterPageProps): Promise<Met
     // Filtrar por categoría
     if (categorySlug) {
       const { data: category } = await supabase
-        .from('blog_category')
+        .from('category')
         .select('id')
         .eq('slug', categorySlug)
         .single()
 
       if (category) {
-        query = query.eq('blog_category_id', category.id)
+        query = query.eq('category_id', category.id)
       }
     }
 
     // Filtrar por etiqueta
     if (tagSlug) {
       const { data: tag } = await supabase
-        .from('blog_tag')
+        .from('tag')
         .select('id')
         .eq('slug', tagSlug)
         .single()
@@ -96,7 +96,7 @@ export async function generateMetadata({ params }: FilterPageProps): Promise<Met
         const { data: articleTags } = await supabase
           .from('blog_article_tag')
           .select('blog_article_id')
-          .eq('blog_tag_id', tag.id)
+          .eq('tag_id', tag.id)
 
         const articleIds = articleTags?.map(at => at.blog_article_id) || []
         if (articleIds.length === 0) {

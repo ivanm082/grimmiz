@@ -16,7 +16,7 @@ interface BlogArticle {
   excerpt: string
   main_image_url: string
   created_at: string
-  blog_category: BlogCategory
+  category: BlogCategory
 }
 
 interface BlogArticleCardProps {
