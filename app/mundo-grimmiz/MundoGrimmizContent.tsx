@@ -21,10 +21,18 @@ export default async function MundoGrimmizContent({ filters }: MundoGrimmizConte
   const sortOrder = filters.orden || 'recientes'
   const currentPage = filters.pagina || 1
 
-  // Obtener todas las categorías para el filtro
+  // Obtener IDs de categorías que tienen productos
+  const { data: categoriesWithProducts } = await supabase
+    .from('product')
+    .select('category_id')
+
+  const categoryIdsWithProducts = [...new Set(categoriesWithProducts?.map(p => p.category_id) || [])]
+
+  // Obtener todas las categorías que tienen productos
   const { data: categories } = await supabase
     .from('category')
     .select('*')
+    .in('id', categoryIdsWithProducts.length > 0 ? categoryIdsWithProducts : [-1])
     .order('name', { ascending: true })
 
   // Si hay filtro por etiqueta, obtener los IDs de productos con esa etiqueta

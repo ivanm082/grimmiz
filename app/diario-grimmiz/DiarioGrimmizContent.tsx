@@ -21,10 +21,19 @@ export default async function DiarioGrimmizContent({ filters }: DiarioGrimmizCon
   const sortOrder = filters.orden || 'recientes'
   const currentPage = filters.pagina || 1
 
-  // Obtener todas las categorías para el filtro
+  // Obtener IDs de categorías que tienen artículos publicados
+  const { data: categoriesWithArticles } = await supabase
+    .from('blog_article')
+    .select('category_id')
+    .eq('published', true)
+
+  const categoryIdsWithArticles = [...new Set(categoriesWithArticles?.map(a => a.category_id) || [])]
+
+  // Obtener todas las categorías que tienen artículos publicados
   const { data: categories } = await supabase
     .from('category')
     .select('*')
+    .in('id', categoryIdsWithArticles.length > 0 ? categoryIdsWithArticles : [-1])
     .order('name', { ascending: true })
 
   // Si hay filtro por etiqueta, obtener los IDs de artículos con esa etiqueta
