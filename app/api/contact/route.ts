@@ -26,15 +26,17 @@ export async function POST(request: Request) {
       )
     }
 
-    // Obtener el slug del producto si existe (opcional)
+    // Obtener el ID y slug del producto si existe (opcional)
+    let productId = null
     let productSlug = null
     if (product) {
       const { data: productData } = await supabase
         .from('product')
-        .select('slug')
+        .select('id, slug')
         .eq('title', product)
         .single()
 
+      productId = productData?.id || null
       productSlug = productData?.slug || null
     }
 
@@ -117,6 +119,7 @@ export async function POST(request: Request) {
         .from('product_lead')
         .insert([
           {
+            product_id: productId,
             product_title: product || 'Producto no especificado',
             product_slug: productSlug,
             name: name.trim(),

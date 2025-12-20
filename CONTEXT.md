@@ -279,8 +279,9 @@ grimmiz/
 
 2. **Dashboard** (`/admin/dashboard`)
    - Estadísticas del negocio
-   - Resumen de productos, categorías y artículos
+   - Resumen de productos, categorías, artículos y leads
    - Productos y artículos recientes
+   - Acceso rápido a gestión de leads
 
 3. **Gestión de Productos** (`/admin/products`)
    - Listado con búsqueda y filtros

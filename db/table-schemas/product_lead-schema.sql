@@ -3,6 +3,7 @@
 
 CREATE TABLE product_lead (
     id SERIAL PRIMARY KEY,
+    product_id INTEGER NULL REFERENCES product(id) ON DELETE SET NULL,
     product_title TEXT NOT NULL,
     product_slug TEXT NULL,
     name TEXT NOT NULL,
@@ -35,6 +36,7 @@ CREATE TRIGGER trigger_update_product_lead_updated_at
 
 -- Comments
 COMMENT ON TABLE product_lead IS 'Leads generados desde el formulario de contacto de productos';
+COMMENT ON COLUMN product_lead.product_id IS 'ID del producto (referencia externa opcional)';
 COMMENT ON COLUMN product_lead.product_title IS 'Título del producto de interés';
 COMMENT ON COLUMN product_lead.product_slug IS 'Slug del producto (opcional, para relacionarlo con la tabla product)';
 COMMENT ON COLUMN product_lead.name IS 'Nombre del lead';

@@ -7,6 +7,7 @@ import Link from 'next/link'
 
 interface Lead {
   id: number
+  product_id: number | null
   product_title: string
   product_slug: string | null
   name: string
@@ -15,6 +16,13 @@ interface Lead {
   status: 'nuevo' | 'contactado' | 'convertido' | 'descartado'
   created_at: string
   updated_at: string
+  product?: {
+    id: number
+    title: string
+    slug: string
+    price: number
+    main_image_url: string | null
+  } | null
 }
 
 export default function LeadsPage() {
@@ -92,6 +100,13 @@ export default function LeadsPage() {
     } catch (error) {
       console.error('Error updating lead status:', error)
     }
+  }
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('es-ES', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(price)
   }
 
   const formatDate = (dateString: string) => {
@@ -202,13 +217,13 @@ export default function LeadsPage() {
             {/* Producto */}
             <div>
               <label className="block text-sm font-medium text-grimmiz-text-secondary mb-1">
-                Producto
+                Producto (nombre o ID)
               </label>
               <input
                 type="text"
                 value={productTitle}
                 onChange={(e) => setProductTitle(e.target.value)}
-                placeholder="Nombre del producto..."
+                placeholder="Nombre o ID del producto..."
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
               />
             </div>
@@ -327,6 +342,11 @@ export default function LeadsPage() {
                         <div className="text-sm font-medium text-grimmiz-text">
                           {lead.product_title}
                         </div>
+                        {lead.product && (
+                          <div className="text-xs text-grimmiz-text-secondary mt-1">
+                            Precio: {formatPrice(lead.product.price)}
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-grimmiz-text">
@@ -390,9 +410,14 @@ export default function LeadsPage() {
                         <p className="text-sm text-grimmiz-text-secondary mb-2">
                           📧 {lead.email}
                         </p>
-                        <p className="text-sm font-medium text-primary mb-2">
+                        <p className="text-sm font-medium text-primary mb-1">
                           🛍️ {lead.product_title}
                         </p>
+                        {lead.product && (
+                          <p className="text-xs text-grimmiz-text-secondary mb-2">
+                            💰 Precio: {formatPrice(lead.product.price)}
+                          </p>
+                        )}
                         <p className="text-sm text-grimmiz-text-secondary line-clamp-3">
                           💬 {lead.comments}
                         </p>

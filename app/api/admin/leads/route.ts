@@ -19,10 +19,19 @@ export async function GET(request: Request) {
     const dateFrom = searchParams.get('date_from')?.trim()
     const dateTo = searchParams.get('date_to')?.trim()
 
-    // Construir la consulta base
+    // Construir la consulta base con información del producto relacionado
     let query = supabase
       .from('product_lead')
-      .select('*', { count: 'exact' })
+      .select(`
+        *,
+        product:product_id (
+          id,
+          title,
+          slug,
+          price,
+          main_image_url
+        )
+      `, { count: 'exact' })
 
     // Aplicar filtros
     if (search) {
@@ -30,7 +39,15 @@ export async function GET(request: Request) {
     }
 
     if (productTitle) {
-      query = query.ilike('product_title', `%${productTitle}%`)
+      // Si es un número, buscar por product_id, si no, por product_title
+      const productId = parseInt(productTitle.trim())
+      if (!isNaN(productId)) {
+        // Buscar por ID del producto
+        query = query.eq('product_id', productId)
+      } else {
+        // Buscar por título del producto
+        query = query.ilike('product_title', `%${productTitle}%`)
+      }
     }
 
     if (status) {
