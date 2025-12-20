@@ -65,8 +65,8 @@ export default function TermsOfUsePage() {
 
                             <h2>1. Aceptación de los Términos</h2>
                             <p>
-                                Al acceder y utilizar el sitio web de Grimmiz ("nosotros", "nuestro" o "Grimmiz"), aceptas estar sujeto
-                                a estos términos y condiciones de uso ("Términos"). Si no estás de acuerdo con estos Términos,
+                                Al acceder y utilizar el sitio web de Grimmiz (&quot;nosotros&quot;, &quot;nuestro&quot; o &quot;Grimmiz&quot;), aceptas estar sujeto
+                                a estos términos y condiciones de uso (&quot;Términos&quot;). Si no estás de acuerdo con estos Términos,
                                 no debes utilizar nuestro sitio web.
                             </p>
                             <p>
