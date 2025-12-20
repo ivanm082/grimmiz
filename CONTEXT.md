@@ -262,7 +262,8 @@ grimmiz/
      - Categorías y etiquetas compartidas
 
 7. **Detalle de Artículo** (`/diario-grimmiz/articulo/{slug}/`)
-   - Renderizado de Markdown a HTML
+   - Renderizado de Markdown a HTML con estilos personalizados
+   - Tipografía mejorada (encabezados jerárquicos, enlaces, listas, código)
    - Galería de imágenes (principal + adicionales)
    - Información del artículo (título, extracto, contenido, fecha)
    - Categoría y etiquetas enlazadas
@@ -295,11 +296,13 @@ grimmiz/
    - Listado con búsqueda y filtros
    - Paginación
    - Crear/Editar/Eliminar artículos
+   - Duplicar artículos (mismo patrón que productos)
    - Editor Markdown para contenido
    - Gestión de imágenes (principal + adicionales)
    - Gestión de etiquetas (compartidas con productos)
    - Estado: borrador/publicado
    - Vista previa en web
+   - Tooltips personalizados en acciones
 
 5. **Gestión de Categorías** (`/admin/categories`)
    - Listado de categorías
@@ -515,6 +518,12 @@ git pull              # Descargar cambios desde origin/main
 - **Almacenamiento organizado**: Carpetas separadas por tipo de contenido
 - **Limpieza automática**: Eliminación completa de imágenes al borrar contenido
 
+### 7. Componentes Reutilizables y DRY
+- **ArticleContent**: Componente dedicado para renderizado de Markdown con estilos personalizados
+- **Duplicación consistente**: Mismo patrón implementado para productos y artículos
+- **Tooltips unificados**: Sistema personalizado consistente en toda la aplicación
+- **Estilos CSS modulares**: Separación de responsabilidades entre componentes y estilos globales
+
 ## 🔄 Flujo de Trabajo Git
 
 1. **Branch principal**: `main`
@@ -550,7 +559,7 @@ git pull              # Descargar cambios desde origin/main
 
 ---
 
-**Última actualización**: 14 de diciembre de 2025
-**Versión del contexto**: 3.0 (completa con Blog y Gestión de Imágenes)
+**Última actualización**: 20 de diciembre de 2025
+**Versión del contexto**: 3.1 (Blog completo con duplicación y estilos mejorados)
 
 
