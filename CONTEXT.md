@@ -526,6 +526,14 @@ git pull              # Descargar cambios desde origin/main
 - **Tooltips unificados**: Sistema personalizado consistente en toda la aplicación
 - **Estilos CSS modulares**: Separación de responsabilidades entre componentes y estilos globales
 
+### 8. Sistema GDPR de Cookies
+- **CookieBanner**: Banner informativo con opciones de aceptar/rechazar cookies
+- **CookieStatus**: Notificación sutil cuando se rechazan cookies no esenciales
+- **Política de Cookies**: Página completa con información detallada (/politica-cookies)
+- **localStorage**: Almacenamiento de preferencias de usuario con timestamps
+- **Navegación normal**: Los usuarios pueden continuar usando el sitio tras rechazar cookies
+- **Cookies técnicas**: Siempre activas para funcionalidad básica del sitio
+
 ## 🔄 Flujo de Trabajo Git
 
 1. **Branch principal**: `main`
