@@ -28,14 +28,24 @@ export default function CookiePolicyPage() {
                 </div>
 
                 {/* Content */}
-                <div className="py-12 bg-white">
-                    <div className="container mx-auto px-4 max-w-4xl">
-                        <div className="prose prose-lg prose-gray max-w-none">
+                <div className="py-16 bg-white">
+                    <div className="container mx-auto px-6 max-w-5xl">
+                        <div className="prose prose-xl prose-gray max-w-none
+                                        [&>h1]:text-4xl [&>h1]:md:text-5xl [&>h1]:font-bold [&>h1]:text-grimmiz-text [&>h1]:leading-tight [&>h1]:mt-16 [&>h1]:mb-8 [&>h1]:text-center
+                                        [&>h2]:text-3xl [&>h2]:md:text-4xl [&>h2]:font-bold [&>h2]:text-grimmiz-text [&>h2]:leading-tight [&>h2]:mt-16 [&>h2]:mb-8 [&>h2]:border-b-2 [&>h2]:border-primary/20 [&>h2]:pb-4
+                                        [&>h3]:text-2xl [&>h3]:md:text-3xl [&>h3]:font-bold [&>h3]:text-grimmiz-text [&>h3]:leading-tight [&>h3]:mt-12 [&>h3]:mb-6
+                                        [&>p]:text-lg [&>p]:text-grimmiz-text-secondary [&>p]:leading-relaxed [&>p]:mb-8 [&>p]:last:mb-0
+                                        [&>ul]:list-disc [&>ul]:list-inside [&>ul]:space-y-4 [&>ul]:my-10 [&>ul]:text-lg [&>ul]:text-grimmiz-text-secondary [&>ul]:ml-6
+                                        [&>ol]:list-decimal [&>ol]:list-inside [&>ol]:space-y-4 [&>ol]:my-10 [&>ol]:text-lg [&>ol]:text-grimmiz-text-secondary [&>ol]:ml-6
+                                        [&>li]:leading-relaxed
+                                        [&>strong]:font-bold [&>strong]:text-grimmiz-text
+                                        [&>a]:text-primary [&>a]:font-medium [&>a]:hover:text-primary-dark [&>a]:transition-colors [&>a]:duration-200 [&>a]:underline [&>a]:decoration-2 [&>a]:decoration-primary/30 [&>a]:hover:decoration-primary/60 [&>a]:underline-offset-2
+                                        [&>blockquote]:my-12 [&>blockquote]:py-6 [&>blockquote]:px-8 [&>blockquote]:bg-blue-50 [&>blockquote]:border-l-4 [&>blockquote]:border-primary [&>blockquote]:rounded-r-lg">
                             <h1 className="text-4xl font-bold text-grimmiz-text mb-8 text-center">
                                 🍪 Política de Cookies
                             </h1>
 
-                            <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-8 rounded-r-lg">
+                            <div className="bg-blue-50 border-l-4 border-blue-500 p-8 mb-12 rounded-r-lg">
                                 <div className="flex items-start">
                                     <div className="flex-shrink-0">
                                         <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -150,7 +160,7 @@ export default function CookiePolicyPage() {
                             </ul>
 
                             <h4>Instrucciones por Navegador:</h4>
-                            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                            <div className="bg-gray-50 p-8 rounded-lg mb-10">
                                 <p className="font-semibold mb-2">Google Chrome:</p>
                                 <p className="text-sm text-gray-600 mb-3">Configuración → Privacidad y seguridad → Cookies y otros datos de sitios</p>
 
@@ -213,7 +223,7 @@ export default function CookiePolicyPage() {
                                 Los cambios entrarán en vigor inmediatamente después de su publicación en esta página.
                             </p>
 
-                            <div className="bg-green-50 border-l-4 border-green-500 p-6 mt-8 rounded-r-lg">
+                            <div className="bg-green-50 border-l-4 border-green-500 p-8 mt-12 rounded-r-lg">
                                 <div className="flex items-start">
                                     <div className="flex-shrink-0">
                                         <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
