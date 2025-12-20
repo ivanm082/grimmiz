@@ -75,19 +75,19 @@ export default function ArticlesTable({
                 <table className="w-full">
                     <thead className="bg-gray-50 border-b">
                         <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-grimmiz-text-secondary uppercase tracking-wider">
                                 Artículo
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-grimmiz-text-secondary uppercase tracking-wider">
                                 Categoría
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-grimmiz-text-secondary uppercase tracking-wider">
                                 Estado
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-grimmiz-text-secondary uppercase tracking-wider">
                                 Fecha
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                            <th className="px-6 py-3 text-right text-xs font-medium text-grimmiz-text-secondary uppercase tracking-wider">
                                 Acciones
                             </th>
                         </tr>
@@ -105,7 +105,7 @@ export default function ArticlesTable({
                                     }
                                 }}
                             >
-                                <td className="px-4 py-4">
+                                <td className="px-6 py-4">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-8 w-8">
                                             <div className="h-8 w-8 rounded bg-gray-200 flex items-center justify-center">
@@ -122,18 +122,18 @@ export default function ArticlesTable({
                                             >
                                                 {article.title}
                                             </Link>
-                                            <div className="text-xs text-gray-500 truncate">
+                                            <div className="text-sm text-grimmiz-text-secondary truncate">
                                                 {article.excerpt?.substring(0, 40)}{article.excerpt && article.excerpt.length > 40 ? '...' : ''}
                                             </div>
                                         </div>
                                     </div>
                                 </td>
-                                <td className="px-4 py-4">
-                                    <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full truncate max-w-full">
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="px-2 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full">
                                         {article.category?.name || 'Sin categoría'}
                                     </span>
                                 </td>
-                                <td className="px-4 py-4 w-24">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-grimmiz-text">
                                     <button
                                         onClick={() => onTogglePublished(article.id, article.published)}
                                         className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
@@ -145,7 +145,7 @@ export default function ArticlesTable({
                                         {article.published ? 'Publicado' : 'Borrador'}
                                     </button>
                                 </td>
-                                <td className="px-4 py-4 text-xs text-gray-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-grimmiz-text-secondary">
                                     <div>
                                         <div>{formatDate(article.created_at)}</div>
                                         {article.updated_at !== article.created_at && (
@@ -153,17 +153,17 @@ export default function ArticlesTable({
                                         )}
                                     </div>
                                 </td>
-                                <td className="px-4 py-4">
+                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div className="flex space-x-1">
                                         {article.published && (
                                             <Link
                                                 href={`/diario-grimmiz/articulo/${article.slug}/`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-green-600 hover:text-green-800 transition-colors p-1 inline-block"
+                                                className="text-green-600 hover:text-green-800 transition-colors p-1"
                                                 data-tooltip="Ver en web"
                                             >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                                 </svg>
                                             </Link>
@@ -173,16 +173,16 @@ export default function ArticlesTable({
                                             className="text-secondary hover:text-secondary-dark transition-colors p-1"
                                             data-tooltip="Duplicar"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                             </svg>
                                         </button>
                                         <Link
                                             href={getEditUrl(article.id)}
-                                            className="text-primary hover:text-primary-dark transition-colors p-1 inline-block"
+                                            className="text-primary hover:text-primary-dark transition-colors p-1"
                                             data-tooltip="Editar"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
                                         </Link>
@@ -191,7 +191,7 @@ export default function ArticlesTable({
                                             className="text-red-600 hover:text-red-800 transition-colors p-1"
                                             data-tooltip="Eliminar"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
