@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { Suspense } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ProductsTable from '@/components/admin/ProductsTable'
@@ -27,7 +28,7 @@ interface Category {
     name: string
 }
 
-export default function ProductsPage() {
+function ProductsPageContent() {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -274,5 +275,13 @@ export default function ProductsPage() {
                 />
             </div>
         </AdminLayout>
+    )
+}
+
+export default function ProductsPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ProductsPageContent />
+        </Suspense>
     )
 }

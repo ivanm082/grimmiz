@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { Suspense } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ArticlesTable from '@/components/admin/ArticlesTable'
@@ -27,7 +28,7 @@ interface Category {
     name: string
 }
 
-export default function BlogArticlesPage() {
+function BlogArticlesPageContent() {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -406,5 +407,13 @@ export default function BlogArticlesPage() {
                 />
             </div>
         </AdminLayout>
+    )
+}
+
+export default function BlogArticlesPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <BlogArticlesPageContent />
+        </Suspense>
     )
 }

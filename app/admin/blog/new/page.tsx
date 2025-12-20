@@ -1,10 +1,11 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ArticleForm from '@/components/admin/ArticleForm'
 
-export default function NewArticlePage() {
+function NewArticlePageContent() {
     const searchParams = useSearchParams()
     const returnUrl = searchParams.get('returnUrl')
 
@@ -23,5 +24,13 @@ export default function NewArticlePage() {
                 <ArticleForm mode="create" returnUrl={returnUrl} />
             </div>
         </AdminLayout>
+    )
+}
+
+export default function NewArticlePage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <NewArticlePageContent />
+        </Suspense>
     )
 }

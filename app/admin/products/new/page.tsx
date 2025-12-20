@@ -1,10 +1,11 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ProductForm from '@/components/admin/ProductForm'
 
-export default function NewProductPage() {
+function NewProductPageContent() {
     const searchParams = useSearchParams()
     const returnUrl = searchParams.get('returnUrl')
 
@@ -23,5 +24,13 @@ export default function NewProductPage() {
                 <ProductForm mode="create" returnUrl={returnUrl} />
             </div>
         </AdminLayout>
+    )
+}
+
+export default function NewProductPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <NewProductPageContent />
+        </Suspense>
     )
 }
