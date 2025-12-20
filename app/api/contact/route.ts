@@ -1,11 +1,13 @@
 import { Resend } from 'resend'
 import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   try {
     const { name, email, comments, product } = await request.json()
+    const supabase = createClient()
 
     // Validar campos requeridos
     if (!name || !email || !comments) {
@@ -22,6 +24,18 @@ export async function POST(request: Request) {
         { error: 'El formato del email no es válido' },
         { status: 400 }
       )
+    }
+
+    // Obtener el slug del producto si existe (opcional)
+    let productSlug = null
+    if (product) {
+      const { data: productData } = await supabase
+        .from('product')
+        .select('slug')
+        .eq('title', product)
+        .single()
+
+      productSlug = productData?.slug || null
     }
 
     // Enviar email al propietario de la tienda
@@ -97,10 +111,34 @@ export async function POST(request: Request) {
       )
     }
 
+    // Guardar el lead en la base de datos
+    try {
+      const { error: leadError } = await supabase
+        .from('product_lead')
+        .insert([
+          {
+            product_title: product || 'Producto no especificado',
+            product_slug: productSlug,
+            name: name.trim(),
+            email: email.trim(),
+            comments: comments.trim(),
+            status: 'nuevo'
+          }
+        ])
+
+      if (leadError) {
+        console.error('Error al guardar el lead:', leadError)
+        // No lanzamos error aquí, el email ya se envió correctamente
+      }
+    } catch (leadSaveError) {
+      console.error('Error al guardar el lead en la base de datos:', leadSaveError)
+      // No lanzamos error aquí, el email ya se envió correctamente
+    }
+
     return NextResponse.json(
-      { 
+      {
         message: 'Mensaje enviado correctamente',
-        id: data?.id 
+        id: data?.id
       },
       { status: 200 }
     )

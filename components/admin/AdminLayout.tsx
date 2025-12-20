@@ -26,6 +26,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         { name: 'Dashboard', href: '/admin/dashboard', icon: '📊' },
         { name: 'Productos', href: '/admin/products', icon: '🛍️' },
         { name: 'Artículos', href: '/admin/blog', icon: '📝' },
+        { name: 'Leads', href: '/admin/leads', icon: '📋' },
         { name: 'Categorías', href: '/admin/categories', icon: '🏷️' },
     ]
 
