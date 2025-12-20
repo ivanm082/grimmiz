@@ -271,6 +271,23 @@ grimmiz/
    - Artículos relacionados (por categoría/etiquetas)
    - Productos relacionados (por categoría/etiquetas)
 
+8. **Páginas Legales**
+   - **Política de Privacidad** (`/politica-privacidad/`)
+     - Contenido GDPR completo con derechos del usuario
+     - Información sobre recopilación y uso de datos
+     - Secciones sobre cookies, seguridad y transferencias internacionales
+     - Estilos avanzados con espaciado generoso y jerarquía visual clara
+   - **Condiciones de Uso** (`/condiciones-uso/`)
+     - Términos completos para e-commerce y uso del sitio
+     - Secciones sobre propiedad intelectual, responsabilidad, pagos y envíos
+     - Ley aplicable y resolución de disputas
+     - Mismo sistema de estilos avanzados que la política de privacidad
+   - **Política de Cookies** (`/politica-cookies/`)
+     - Información detallada sobre cookies técnicas, analíticas y de marketing
+     - Explicación de qué sucede al aceptar/rechazar cookies
+     - Instrucciones para gestionar cookies en diferentes navegadores
+     - Estilos consistentes con las demás páginas legales
+
 ### Panel de Administración (`/admin/*`)
 
 1. **Login** (`/admin/login`)
@@ -534,6 +551,23 @@ git pull              # Descargar cambios desde origin/main
 - **Navegación normal**: Los usuarios pueden continuar usando el sitio tras rechazar cookies
 - **Cookies técnicas**: Siempre activas para funcionalidad básica del sitio
 
+### 9. Páginas Legales con Estilos Avanzados
+- **Política de Privacidad** (`/politica-privacidad`) con contenido GDPR completo
+- **Condiciones de Uso** (`/condiciones-uso`) con términos e-commerce detallados
+- **Política de Cookies** (`/politica-cookies`) con información técnica y legal
+- **Estilos CSS avanzados**: Selectores complejos `[&>h1], [&>p], [&>ul]` para tipografía perfecta
+- **Espaciado generoso**: `mt-16, mb-8, mb-10, space-y-4` para que el texto respire
+- **Jerarquía visual clara**: Encabezados con bordes y padding distintivo
+- **Responsive design**: Adaptable a todos los tamaños de pantalla
+- **SEO optimizado**: Meta tags y estructura semántica correcta
+
+### 10. Mejoras Técnicas Recientes
+- **Arreglos de Build**: ESLint errors resueltos, Suspense boundaries implementados
+- **Comillas escapadas**: `&quot;` en lugar de `"` para compatibilidad JSX
+- **SSR Optimization**: Páginas admin con Suspense para `useSearchParams()`
+- **CSS avanzado**: Selectores anidados para estilos de componentes específicos
+- **Build estable**: Compatible con Vercel deployment
+
 ## 🔄 Flujo de Trabajo Git
 
 1. **Branch principal**: `main`
@@ -550,16 +584,17 @@ git pull              # Descargar cambios desde origin/main
 
 ## 🎯 Próximos Pasos Sugeridos
 
-1. **Aumentar cobertura de tests** en componentes complejos (ArticleForm, AdminLayout)
-2. **Optimizar rendimiento**: Lazy loading, code splitting
-3. **Añadir más features SEO**: Sitemap XML, robots.txt
-4. **Implementar analytics**: Google Analytics o similar
-5. **Mejorar accesibilidad**: ARIA labels, navegación por teclado
-6. **Añadir más tests E2E**: Playwright o Cypress
-7. **Sistema de comentarios** en artículos del blog
-8. **Newsletter/Email marketing** integrado
-9. **Búsqueda avanzada** con filtros de fecha
-10. **Exportación de datos** para análisis
+1. ✅ **Páginas legales completas** con estilos avanzados (COMPLETADO)
+2. **Aumentar cobertura de tests** en componentes complejos (ArticleForm, AdminLayout)
+3. **Optimizar rendimiento**: Lazy loading, code splitting
+4. **Añadir más features SEO**: Sitemap XML, robots.txt
+5. **Implementar analytics**: Google Analytics o similar
+6. **Mejorar accesibilidad**: ARIA labels, navegación por teclado
+7. **Añadir más tests E2E**: Playwright o Cypress
+8. **Sistema de comentarios** en artículos del blog
+9. **Newsletter/Email marketing** integrado
+10. **Búsqueda avanzada** con filtros de fecha
+11. **Exportación de datos** para análisis
 
 ## 👤 Información del Desarrollador
 
@@ -570,6 +605,6 @@ git pull              # Descargar cambios desde origin/main
 ---
 
 **Última actualización**: 20 de diciembre de 2025
-**Versión del contexto**: 3.1 (Blog completo con duplicación y estilos mejorados)
+**Versión del contexto**: 3.2 (Sistema legal completo con estilos avanzados)
 
 
