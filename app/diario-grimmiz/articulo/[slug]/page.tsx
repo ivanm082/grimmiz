@@ -2,13 +2,12 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import BlogArticleCard from '@/components/BlogArticleCard'
+import ArticleContent from '@/components/ArticleContent'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { buildBlogListUrl, buildProductListUrl } from '@/lib/url-builder'
 import { Metadata } from 'next'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 
 interface ArticlePageProps {
   params: {
@@ -387,31 +386,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
             {/* Contenido del artículo (Markdown) */}
             <div className="mt-12">
-              <div className="prose prose-lg prose-gray max-w-none
-                prose-headings:text-grimmiz-text prose-headings:font-bold
-                prose-h1:text-4xl prose-h1:mt-16 prose-h1:mb-8 prose-h1:leading-tight
-                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:leading-tight
-                prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:leading-tight
-                prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:leading-tight
-                prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg
-                prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-a:font-medium
-                prose-strong:text-grimmiz-text prose-strong:font-semibold
-                prose-ul:my-6 prose-ol:my-6
-                prose-li:text-gray-700 prose-li:my-2 prose-li:text-lg
-                prose-img:rounded-lg prose-img:shadow-md prose-img:my-8 prose-img:w-full
-                prose-blockquote:border-l-4 prose-blockquote:border-primary
-                prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-600 prose-blockquote:bg-gray-50 prose-blockquote:py-4 prose-blockquote:my-8
-                prose-code:text-primary prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:font-medium
-                prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-lg prose-pre:p-6 prose-pre:my-8
-                prose-hr:border-gray-200 prose-hr:my-12
-                prose-table:border-collapse prose-table:w-full prose-table:my-8
-                prose-th:bg-gray-100 prose-th:border prose-th:border-gray-300 prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:font-semibold
-                prose-td:border prose-td:border-gray-300 prose-td:px-4 prose-td:py-2"
-              >
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {article.content}
-                </ReactMarkdown>
-              </div>
+              <ArticleContent content={article.content} />
             </div>
 
             {/* Imágenes adicionales en mosaico */}

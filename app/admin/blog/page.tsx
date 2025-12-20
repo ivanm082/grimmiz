@@ -50,6 +50,7 @@ export default function BlogArticlesPage() {
         articleTitle: ''
     })
     const [isDeleting, setIsDeleting] = useState(false)
+    const [isDuplicating, setIsDuplicating] = useState(false)
 
     // Función para actualizar la URL con los filtros
     const updateURL = useCallback((params: { [key: string]: string | number }) => {
@@ -208,6 +209,39 @@ export default function BlogArticlesPage() {
         }
     }
 
+    const handleDuplicate = async (articleId: number) => {
+        if (isDuplicating) return
+
+        if (!confirm('¿Estás seguro de que quieres duplicar este artículo? Se creará una copia sin imágenes.')) {
+            return
+        }
+
+        setIsDuplicating(true)
+        try {
+            const response = await fetch(`/api/admin/blog/${articleId}/duplicate`, {
+                method: 'POST'
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al duplicar el artículo')
+            }
+
+            // Mostrar mensaje de éxito
+            alert('Artículo duplicado exitosamente')
+
+            // Recargar artículos
+            await loadArticles()
+
+        } catch (error: any) {
+            console.error('Error duplicating article:', error)
+            alert(error.message || 'Error al duplicar el artículo. Por favor, inténtalo de nuevo.')
+        } finally {
+            setIsDuplicating(false)
+        }
+    }
+
 
     return (
         <AdminLayout>
@@ -345,6 +379,7 @@ export default function BlogArticlesPage() {
                     isLoading={isLoading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onDuplicate={handleDuplicate}
                     onTogglePublished={handleTogglePublished}
                     returnUrl={`${pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`}
                 />

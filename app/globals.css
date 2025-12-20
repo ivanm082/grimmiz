@@ -82,6 +82,77 @@ body {
   [data-tooltip]:hover::after {
     transform: translateX(-50%) translateY(-2px);
   }
+
+  /* Estilos personalizados para el contenido de artículos */
+  .article-content hr {
+    border: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(124, 90, 163, 0.2) 0%, rgba(147, 192, 32, 0.2) 50%, rgba(124, 90, 163, 0.2) 100%);
+    margin: 3rem 0;
+    border-radius: 1px;
+  }
+
+  /* Mejorar la apariencia de las listas */
+  .article-content ul li::marker {
+    color: #7c5aa3;
+    font-weight: bold;
+  }
+
+  .article-content ol li::marker {
+    color: #7c5aa3;
+    font-weight: bold;
+  }
+
+  /* Estilos para checkboxes en listas de tareas */
+  .article-content input[type="checkbox"] {
+    accent-color: #7c5aa3;
+    transform: scale(1.1);
+  }
+
+  /* Mejorar la apariencia de las tablas */
+  .article-content table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .article-content thead th {
+    background: linear-gradient(135deg, rgba(124, 90, 163, 0.1) 0%, rgba(147, 192, 32, 0.1) 100%);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+  }
+
+  /* Estilos para bloques de código inline */
+  .article-content code {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Mejorar la apariencia de los bloques de código */
+  .article-content pre {
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .article-content pre::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #7c5aa3 0%, #93c020 100%);
+    border-radius: 8px 8px 0 0;
+  }
+
+  /* Estilos para imágenes con título */
+  .article-content img + p {
+    text-align: center;
+    margin-top: 0.5rem;
+    font-style: italic;
+    color: #555555;
+  }
 }
 
 

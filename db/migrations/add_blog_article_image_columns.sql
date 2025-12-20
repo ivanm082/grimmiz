@@ -21,3 +21,5 @@ WHERE updated_at IS NULL;
 -- Comentarios sobre las nuevas columnas
 COMMENT ON COLUMN blog_article_image.alt_text IS 'Texto alternativo para la imagen (SEO)';
 COMMENT ON COLUMN blog_article_image.caption IS 'Pie de foto o descripción de la imagen';
+
+
