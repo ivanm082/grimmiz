@@ -303,6 +303,7 @@ grimmiz/
    - Estado: borrador/publicado
    - Vista previa en web
    - Tooltips personalizados en acciones
+   - Estilos unificados con tabla de productos (padding, iconos, tipografía)
 
 5. **Gestión de Categorías** (`/admin/categories`)
    - Listado de categorías
