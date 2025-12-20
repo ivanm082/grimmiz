@@ -222,7 +222,7 @@ export default function TagInput({ productId, value, onChange }: TagInputProps) 
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                 </svg>
                                 <span className="text-secondary font-medium">
-                                    Crear "{inputValue}"
+                                    Crear &quot;{inputValue}&quot;
                                 </span>
                             </button>
                         )}

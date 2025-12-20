@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { useState, useEffect, forwardRef, useImperativeHandle, useCallback } from 'react'
 import ImageUpload from './ImageUpload'
 import OptimizedImage from '@/components/OptimizedImage'
 
@@ -48,7 +48,7 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
             }
         }, [currentEntityId])
 
-        const loadImages = async () => {
+        const loadImages = useCallback(async () => {
             if (!currentEntityId) return
 
             setIsLoading(true)
@@ -69,7 +69,7 @@ const AdditionalImagesManager = forwardRef<AdditionalImagesManagerRef, Additiona
             } finally {
                 setIsLoading(false)
             }
-        }
+        }, [currentEntityId, apiBasePath])
 
         const handleImageUpload = async (url: string) => {
             if (!currentEntityId) {

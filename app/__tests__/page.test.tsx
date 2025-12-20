@@ -5,26 +5,32 @@ import '@testing-library/jest-dom'
 
 // Mock next/link
 jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
+  const MockLink = ({ children, href }: { children: React.ReactNode; href: string }) => {
     return <a href={href}>{children}</a>
   }
+  MockLink.displayName = 'MockLink'
+  return MockLink
 })
 
 // Mock components
 jest.mock('@/components/Header', () => {
-  return function MockHeader() {
+  const MockHeader = () => {
     return <header data-testid="header">Header</header>
   }
+  MockHeader.displayName = 'MockHeader'
+  return MockHeader
 })
 
 jest.mock('@/components/Footer', () => {
-  return function MockFooter() {
+  const MockFooter = () => {
     return <footer data-testid="footer">Footer</footer>
   }
+  MockFooter.displayName = 'MockFooter'
+  return MockFooter
 })
 
 jest.mock('@/components/ProductCard', () => {
-  return function MockProductCard({ name, price }: { name: string; price: number }) {
+  const MockProductCard = ({ name, price }: { name: string; price: number }) => {
     return (
       <div data-testid="product-card">
         <h3>{name}</h3>
@@ -32,10 +38,12 @@ jest.mock('@/components/ProductCard', () => {
       </div>
     )
   }
+  MockProductCard.displayName = 'MockProductCard'
+  return MockProductCard
 })
 
 jest.mock('@/components/BlogArticleCard', () => {
-  return function MockBlogArticleCard({ article }: { article: any }) {
+  const MockBlogArticleCard = ({ article }: { article: any }) => {
     return (
       <div data-testid="blog-article-card">
         <h3>{article.title}</h3>
@@ -43,6 +51,8 @@ jest.mock('@/components/BlogArticleCard', () => {
       </div>
     )
   }
+  MockBlogArticleCard.displayName = 'MockBlogArticleCard'
+  return MockBlogArticleCard
 })
 
 // Mock Supabase

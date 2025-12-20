@@ -3,16 +3,20 @@ import Header from '../Header'
 
 // Mock Next.js Link and Image
 jest.mock('next/link', () => {
-  return ({ children, href, onClick, className }: any) => {
+  const MockLink = ({ children, href, onClick, className }: any) => {
     return <a href={href} onClick={onClick} className={className}>{children}</a>
   }
+  MockLink.displayName = 'MockLink'
+  return MockLink
 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
   default: (props: any) => {
     // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-    return <img {...props} />
+    const MockImage = (props: any) => <img {...props} />
+    MockImage.displayName = 'MockImage'
+    return MockImage
   },
 }))
 
