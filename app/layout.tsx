@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import CookieBanner from "@/components/CookieBanner";
+import CookieStatus from "@/components/CookieStatus";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -20,7 +22,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={montserrat.variable}>{children}</body>
+      <body className={montserrat.variable}>
+        {children}
+        <CookieBanner />
+        <CookieStatus />
+      </body>
     </html>
   );
 }
