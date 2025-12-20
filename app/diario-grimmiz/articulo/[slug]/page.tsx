@@ -37,12 +37,15 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     .eq('published', true)
     .single()
 
+  // Normalizar la categoría (puede venir como array o objeto)
+  const category = article ? (Array.isArray(article.category) ? article.category[0] : article.category) : null
+
   // Construir el título: "{nombre-del-artículo} | {categoria} | Diario Grimmiz"
   let title = 'Artículo | Diario Grimmiz' // Fallback por si falla la query
   let description = 'Artículo del Diario Grimmiz - Inspiración, tutoriales y consejos de manualidades.'
   
   if (article) {
-    const categoryName = article.category?.name || 'Artículos'
+    const categoryName = category?.name || 'Artículos'
     title = `${article.title} | ${categoryName} | Diario Grimmiz`
     
     // Usar el extracto como descripción si está disponible
@@ -88,6 +91,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   if (articleError || !article) {
     notFound()
   }
+
+  // Normalizar la categoría (puede venir como array o objeto)
+  const category = Array.isArray(article.category) ? article.category[0] : article.category
 
   // Obtener imágenes adicionales del artículo
   const { data: additionalImages } = await supabase
@@ -183,8 +189,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     const matchingTags = aTagIds.filter(tagId => tagIds.includes(tagId))
     relevanceScore += matchingTags.length
 
+    // Normalizar la categoría
+    const normalizedCategory = Array.isArray(a.category) ? a.category[0] : a.category
+
     return {
       ...a,
+      category: normalizedCategory,
       relevanceScore
     }
   }) || []
@@ -280,14 +290,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               <Link href="/diario-grimmiz/" className="hover:text-primary transition-colors">
                 Diario Grimmiz
               </Link>
-              {article.category && (
+              {category && (
                 <>
                   <span>/</span>
-                  <Link 
-                    href={buildBlogListUrl({ categoria: article.category.slug })}
+                  <Link
+                    href={buildBlogListUrl({ categoria: category.slug })}
                     className="hover:text-primary transition-colors"
                   >
-                    {article.category.name}
+                    {category.name}
                   </Link>
                 </>
               )}
@@ -303,12 +313,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {/* Información del artículo */}
             <div className="space-y-6">
               {/* Categoría */}
-              {article.category && (
+              {category && (
                 <Link
-                  href={buildBlogListUrl({ categoria: article.category.slug })}
+                  href={buildBlogListUrl({ categoria: category.slug })}
                   className="inline-block text-sm font-medium text-primary hover:text-primary-dark transition-colors"
                 >
-                  {article.category.name}
+                  {category.name}
                 </Link>
               )}
 
@@ -390,7 +400,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </div>
 
             {/* Imágenes adicionales en mosaico */}
-            {additionalImages.length > 0 && (
+            {additionalImages && additionalImages.length > 0 && (
               <div className="mt-16">
                 <h3 className="text-2xl font-bold text-grimmiz-text mb-8 text-center">
                   Galería de imágenes
@@ -433,8 +443,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               </div>
 
               <div className="text-center mt-8">
-                <Link 
-                  href={article.category ? buildBlogListUrl({ categoria: article.category.slug }) : '/diario-grimmiz/'}
+                <Link
+                  href={category ? buildBlogListUrl({ categoria: category.slug }) : '/diario-grimmiz/'}
                   className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
                 >
                   Ver más artículos
@@ -464,8 +474,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               </div>
 
               <div className="text-center mt-8">
-                <Link 
-                  href={article.category ? buildProductListUrl({ categoria: article.category.slug }) : '/mundo-grimmiz/'}
+                <Link
+                  href={category ? buildProductListUrl({ categoria: category.slug }) : '/mundo-grimmiz/'}
                   className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
                 >
                   Ver todos los productos

@@ -26,7 +26,7 @@ export default async function MundoGrimmizContent({ filters }: MundoGrimmizConte
     .from('product')
     .select('category_id')
 
-  const categoryIdsWithProducts = [...new Set(categoriesWithProducts?.map(p => p.category_id) || [])]
+  const categoryIdsWithProducts = Array.from(new Set(categoriesWithProducts?.map(p => p.category_id) || []))
 
   // Obtener todas las categorías que tienen productos
   const { data: categories } = await supabase

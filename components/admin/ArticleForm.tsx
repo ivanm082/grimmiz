@@ -366,7 +366,7 @@ export default function ArticleForm({ article, mode, returnUrl }: ArticleFormPro
                         onChange={(value) => handleChange('content', value || '')}
                         preview="edit"
                         hideToolbar={false}
-                        visibleDragBar={false}
+                        visibleDragbar={false}
                         height={400}
                         textareaProps={{
                             placeholder: 'Escribe el contenido del artículo en Markdown...'

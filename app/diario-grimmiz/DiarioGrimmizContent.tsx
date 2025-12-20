@@ -6,6 +6,9 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { buildBlogListUrl, type BlogFilters as Filters } from '@/lib/url-builder'
 
+// Re-export the BlogFilters type for use in other files
+export type BlogFilters = Filters
+
 interface DiarioGrimmizContentProps {
   filters: Filters
 }
@@ -27,7 +30,7 @@ export default async function DiarioGrimmizContent({ filters }: DiarioGrimmizCon
     .select('category_id')
     .eq('published', true)
 
-  const categoryIdsWithArticles = [...new Set(categoriesWithArticles?.map(a => a.category_id) || [])]
+  const categoryIdsWithArticles = Array.from(new Set(categoriesWithArticles?.map(a => a.category_id) || []))
 
   // Obtener todas las categorías que tienen artículos publicados
   const { data: categories } = await supabase

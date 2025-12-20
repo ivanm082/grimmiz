@@ -42,12 +42,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     .eq('id', productId)
     .single()
 
+  // Normalizar la categoría (puede venir como array o objeto)
+  const category = product ? (Array.isArray(product.category) ? product.category[0] : product.category) : null
+
   // Construir el título: "{nombre-del-producto} | {categoria} | Grimmiz"
   let title = 'Producto | Grimmiz' // Fallback por si falla la query
   let description = 'Producto artesanal hecho a mano con dedicación y cariño en Grimmiz.'
   
   if (product) {
-    const categoryName = product.category?.name || 'Productos'
+    const categoryName = category?.name || 'Productos'
     title = `${product.title} | ${categoryName} | Grimmiz`
     
     // Construir la descripción: "Ver las fotos y detalles de {categoria} {nombre}. Hecho a mano en Grimmiz."
@@ -102,6 +105,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (productError || !product) {
     notFound()
   }
+
+  // Normalizar la categoría (puede venir como array o objeto)
+  const category = Array.isArray(product.category) ? product.category[0] : product.category
 
   // Obtener imágenes adicionales
   const { data: additionalImages } = await supabase
@@ -214,8 +220,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
     const matchingTags = articleTags.filter(tagId => tagIds.includes(tagId))
     relevanceScore += matchingTags.length
 
+    // Normalizar la categoría
+    const normalizedCategory = Array.isArray(article.category) ? article.category[0] : article.category
+
     return {
       ...article,
+      category: normalizedCategory,
       relevanceScore
     }
   }) || []
@@ -252,11 +262,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {product.category && (
                 <>
                   <span>/</span>
-                  <Link 
-                    href={buildProductListUrl({ categoria: product.category.slug })}
+                  <Link
+                    href={buildProductListUrl({ categoria: category.slug })}
                     className="hover:text-primary transition-colors"
                   >
-                    {product.category.name}
+                    {category.name}
                   </Link>
                 </>
               )}
@@ -277,11 +287,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <div className="space-y-6">
                 {/* Categoría */}
                 {product.category && (
-                  <Link 
-                    href={buildProductListUrl({ categoria: product.category.slug })}
-                    className="inline-block text-sm font-medium text-primary hover:text-primary-dark transition-colors"
-                  >
-                    {product.category.name}
+                <Link
+                  href={buildProductListUrl({ categoria: category.slug })}
+                  className="inline-block text-sm font-medium text-primary hover:text-primary-dark transition-colors"
+                >
+                  {category.name}
                   </Link>
                 )}
 
@@ -347,7 +357,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="container mx-auto px-4">
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold text-grimmiz-text mb-4">
-                  Más productos de {product.category?.name || 'esta categoría'}
+                  Más productos de {category?.name || 'esta categoría'}
                 </h2>
                 <p className="text-grimmiz-text-secondary text-lg">
                   Descubre otras creaciones que te pueden gustar
@@ -361,8 +371,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
 
               <div className="text-center mt-8">
-                <Link 
-                  href={product.category ? buildProductListUrl({ categoria: product.category.slug }) : '/mundo-grimmiz'}
+                <Link
+                  href={category ? buildProductListUrl({ categoria: category.slug }) : '/mundo-grimmiz'}
                   className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
                 >
                   Ver todos los productos
